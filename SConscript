@@ -19,6 +19,9 @@ def vardb_global(env):
     env.Append(CPPPATH = PREFIX+'/include')
     env.Append(CPPPATH = PREFIX+'vardb')
     env.Append(LIBPATH = PREFIX+'/lib')
+    if env['PLATFORM'] == 'darwin':
+      env.Append(CPPPATH=['/opt/X11/include'])
+      env.Append(LIBPATH=['/opt/X11/lib'])
 
 env = Environment(tools=['default'], GLOBAL_TOOLS=[vardb_global])
 
