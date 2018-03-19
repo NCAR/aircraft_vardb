@@ -7,9 +7,6 @@
 [submodule "domx"]
 	path = domx
 	url = https://github.com/ncareol/domx
-[submodule "libraf"]
-	path = libraf
-	url = https://github.com/ncar/libraf
 [submodule "raf"]
 	path = raf
 	url = https://github.com/ncar/libraf
