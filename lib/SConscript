@@ -1,6 +1,8 @@
 # -*- python -*-
 
-env = Environment(tools=['default', 'jlocal', 'text2cc', 'domx', 'boost_regex'])
+Import('PREFIX')
+
+env = Environment(tools=['default', 'text2cc', 'domx', 'boost_regex'])
 
 env.Append(CXXFLAGS=Split("-Wall -g -O2"))
 
@@ -15,9 +17,9 @@ env.EmbedTextCC("vdbschema.xsd.cc", "VDBSchema.xsd", "VDBSCHEMA")
 libvardb = env.Library('VarDB', srcs)
 env.Default(libvardb)
 
-env.Install("$JLOCALLIBDIR", libvardb)
-env.Install("$JLOCALINCDIR/raf", headers)
-env.Install("$JLOCAL/man/man3", "vardb.3")
+#env.Install(PREFIX+'/lib', libvardb)
+env.Install(PREFIX+'/raf', headers)
+env.Install(PREFIX+'/man/man3', "vardb.3")
 
 libdir = env.Dir('.')
 
@@ -35,4 +37,5 @@ def vardb(env):
     env.Require('boost_regex')
 
 Export('vardb')
+
 

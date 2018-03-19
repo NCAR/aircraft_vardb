@@ -1,6 +1,8 @@
 # -*- python -*-
 
-env = Environment(tools=['default', 'jlocal', 'vardb', 'testing', 'pylint',
+Import('PREFIX')
+
+env = Environment(tools=['default', 'vardb', 'testing', 'pylint',
                          'postgres_testdb'])
 env.MergeFlags('!python-config --includes')
 env.Append(LIBS='boost_python')

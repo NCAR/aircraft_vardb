@@ -1,6 +1,8 @@
 # -*- python -*-
 
-env = Environment(tools=['default', 'jlocal'])
+Import('PREFIX')
+
+env = Environment(tools=['default'])
 
 modules = Split("""
 addSignal.py
@@ -16,5 +18,5 @@ windowSetup.py
 """)
 
 # Targets are only to install files.
-env.Install('$JLOCAL/bin', 'vdbEditor')
-env.Install('$JLOCAL/lib/python/site-packages/vardb', modules)
+env.Install(PREFIX+'/bin', 'vdbEditor')
+env.Install(PREFIX+'/lib/python/site-packages/vardb', modules)

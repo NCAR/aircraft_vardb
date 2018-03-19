@@ -1,11 +1,13 @@
 # -*- python -*-
 
-env = Environment(tools=['default', 'jlocal', 'vardb', 'netcdf'])
+Import('PREFIX')
+
+env = Environment(tools=['default', 'vardb', 'netcdf'])
 
 env.Append(CXXFLAGS=Split("-Wall -g -O2"))
-env.Append(LIBS=["raf"])
+env.Append(LIBS=['raf'])
 
 vdb2xml = env.Program("vdb2xml.cc")
 
 env.Default(vdb2xml)
-env.Install("$JLOCAL/bin", vdb2xml)
+env.Install(PREFIX+'/bin', vdb2xml)

@@ -1,34 +1,22 @@
 # -*- python -*-
 
-import os
-import sys
-import eol_scons
+# This SConstruct does nothing more than load the SConscript in this dir
+# The Environment() is created in the SConstruct script
+# This dir can be built standalone by executing scons here, or together
+# by executing scons in a parent directory
 
-def vardb_global(env):
-    "Copy the jlocal settings into the prefixoptions."
-    env.Require('jlocal')
-    env['DEFAULT_INSTALL_PREFIX'] = "$JLOCAL"
-    # The python wrapper must be built as a shared library, and so all the
-    # libraries it links against must be relocatable, eg liblogx, libdomx,
-    # and libVarDB.
-    env.AppendUnique(CXXFLAGS=['-fPIC'])
-    env.Require('prefixoptions')
-    env['VARDB_README_FILE'] = env.File("#/README")
-    
-env = Environment(tools=['default'], GLOBAL_TOOLS=[vardb_global])
+AddOption('--prefix',
+  dest='prefix',
+  type='string',
+  nargs=1,
+  action='store',
+  metavar='DIR',
+  default='#',
+  help='installation prefix')
 
-SConscript('lib/SConscript')
-SConscript('vdbdump/SConscript')
-SConscript('vdb2xml/SConscript')
-SConscript('vdb2ncml/SConscript')
-SConscript('editpy/SConscript')
-SConscript('editor/SConscript')
-SConscript('python/SConscript')
-SConscript('tests/SConscript')
+env = Environment(PREFIX = GetOption('prefix'))
+PREFIX=env['PREFIX']
 
-env.Alias('apidocs', env.Dir("apidocs"))
+Export('PREFIX')
 
-variables = env.GlobalVariables()
-variables.Update(env)
-Help(variables.GenerateHelpText(env))
-
+SConscript('SConscript', exports = ['PREFIX'])
