@@ -1,7 +1,5 @@
 # -*- python -*-
 
-Import('PREFIX')
-
 env = Environment(tools=['default', 'vardb', 'netcdf'])
 
 env.Append(CXXFLAGS=Split("-Wall -g -O2"))
@@ -10,4 +8,4 @@ env.Append(LIBS=["raf"])
 vdb2ncml = env.Program("vdb2ncml.cc")
 
 env.Default(vdb2ncml)
-env.Install(PREFIX+'/bin', vdb2ncml)
+env.Install(env['INSTALL_PREFIX']+'/bin', vdb2ncml)

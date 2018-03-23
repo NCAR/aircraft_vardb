@@ -1,7 +1,5 @@
 # -*- python -*-
 
-Import('PREFIX')
-
 env = Environment(tools=['default'])
 
 modules = Split("""
@@ -18,5 +16,5 @@ windowSetup.py
 """)
 
 # Targets are only to install files.
-env.Install(PREFIX+'/bin', 'vdbEditor')
-env.Install(PREFIX+'/lib/python/site-packages/vardb', modules)
+env.Install(env['INSTALL_PREFIX']+'/bin', 'vdbEditor')
+env.Install(env['INSTALL_PREFIX']+'/lib/python/site-packages/vardb', modules)

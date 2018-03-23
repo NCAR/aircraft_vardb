@@ -15,7 +15,7 @@ COPYRIGHT:	University Corporation for Atmospheric Research, 1993-2014
 #include <cstdio>
 #include <cstring>
 
-#include <raf/vardb.hh>
+#include <vardb.hh>
 
 bool tracker = false;
 

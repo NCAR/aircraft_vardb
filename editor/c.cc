@@ -3,7 +3,7 @@
 #include <qxml.h>
 #include <qstring.h>
 
-#include "../lib/vardb.h"
+#include "vardb.h"
 
 
 main()

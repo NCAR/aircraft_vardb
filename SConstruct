@@ -1,22 +1,14 @@
-# -*- python -*-
+#!python
 
 # This SConstruct does nothing more than load the SConscript in this dir
 # The Environment() is created in the SConstruct script
 # This dir can be built standalone by executing scons here, or together
 # by executing scons in a parent directory
 
-AddOption('--prefix',
-  dest='prefix',
-  type='string',
-  nargs=1,
-  action='store',
-  metavar='DIR',
-  default='#',
-  help='installation prefix')
+def Vardb(env):
+    env.Require(['prefixoptions'])
 
-env = Environment(PREFIX = GetOption('prefix'))
-PREFIX=env['PREFIX']
+env = Environment(GLOBAL_TOOLS = [Vardb])
 
-Export('PREFIX')
-
-SConscript('SConscript', exports = ['PREFIX'])
+SConscript('raf/SConscript')
+SConscript('SConscript')

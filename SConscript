@@ -1,6 +1,5 @@
 # -*- python -*-
 
-Import('PREFIX')
 
 import os
 import sys
@@ -8,22 +7,21 @@ import eol_scons
 
 def vardb_global(env):
     "Copy prefix settings into the prefixoptions."
-    env['DEFAULT_INSTALL_PREFIX'] = "$PREFIX"
+    env['DEFAULT_INSTALL_PREFIX'] = "$INSTALL_PREFIX"
     # The python wrapper must be built as a shared library, and so all the
     # libraries it links against must be relocatable, eg liblogx, libdomx,
     # and libVarDB.
     env.AppendUnique(CXXFLAGS=['-fPIC'])
     env.Require('prefixoptions')
-    env['VARDB_README_FILE'] = env.File("$PREFIX/README")
-    env.Append(CPPPATH = PREFIX+'/raf')
-    env.Append(CPPPATH = PREFIX+'/include')
-    env.Append(CPPPATH = PREFIX+'vardb')
-    env.Append(LIBPATH = PREFIX+'/lib')
+    env['VARDB_README_FILE'] = env.File("$INSTALL_PREFIX/README")
+    env.Append(CPPPATH = ['#/lib'])
+    env.Append(LIBPATH = ['#/lib'])
+    env.Append(LIBPATH = ['#/raf'])
     if env['PLATFORM'] == 'darwin':
       env.Append(CPPPATH=['/opt/X11/include'])
       env.Append(LIBPATH=['/opt/X11/lib'])
 
-env = Environment(tools=['default'], GLOBAL_TOOLS=[vardb_global])
+env = Environment(tools=['default','prefixoptions'], GLOBAL_TOOLS=[vardb_global])
 
 SConscript('lib/SConscript')
 SConscript('vdbdump/SConscript')

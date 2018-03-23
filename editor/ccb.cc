@@ -34,7 +34,7 @@ COPYRIGHT:	University Corporation for Atmospheric Research, 1993-2011
 
 #include "define.h"
 #include <raf/portable.h>
-#include <raf/vardb.h>
+#include <vardb.h>
 
 static int	ChangesMade = FALSE, currentCategory = 0, currentStdName = 0;
 

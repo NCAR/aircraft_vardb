@@ -1,13 +1,11 @@
 # -*- python -*-
 
-Import('PREFIX')
-
-env = Environment(tools=['default', 'vardb'])
+env = Environment(tools=['default','vardb'])
 
 env.Append(CXXFLAGS=Split("-Wall -g -O2"))
 
 vdbdump = env.Program("vdbdump.cc")
 
 env.Default(vdbdump)
-env.Install(PREFIX+'/bin', vdbdump)
+env.Install(env['INSTALL_PREFIX']+'/bin', vdbdump)
 

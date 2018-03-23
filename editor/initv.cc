@@ -19,7 +19,7 @@ COPYRIGHT:	University Corporation for Atmospheric Research, 1993-2006
 #include <Xm/List.h>
 
 #include "define.h"
-#include <raf/vardb.h>
+#include <vardb.h>
 
 char	buffer[1024], FileName[1024], *catList[128], *ProjectDirectory,
 	*stdNameList[512];

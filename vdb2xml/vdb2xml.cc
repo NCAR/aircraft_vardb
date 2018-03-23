@@ -17,8 +17,8 @@ COPYRIGHT:	University Corporation for Atmospheric Research, 2006
 #include <cstring>
 #include <libgen.h>
 
-#include <raf/vardb.h>
-#include <raf/vardb.hh>
+#include <vardb.h>
+#include <vardb.hh>
 
 #include <raf/portable.h>
 #include <fstream>

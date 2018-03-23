@@ -1,7 +1,5 @@
 # -*- python -*-
 
-Import('PREFIX')
-
 env = Environment(tools=['default', 'vardb', 'testing', 'pylint',
                          'postgres_testdb'])
 env.MergeFlags('!python-config --includes')
