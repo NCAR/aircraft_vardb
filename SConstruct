@@ -10,5 +10,4 @@ def Vardb(env):
 
 env = Environment(GLOBAL_TOOLS = [Vardb])
 
-SConscript('raf/SConscript')
 SConscript('SConscript')

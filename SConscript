@@ -14,7 +14,7 @@ def vardb_global(env):
     env.AppendUnique(CXXFLAGS=['-fPIC'])
     env.Require('prefixoptions')
     env['VARDB_README_FILE'] = env.File("$INSTALL_PREFIX/README")
-    env.Append(CPPPATH = ['#/lib'])
+    env.Append(CPPPATH = ['#/include'])
     env.Append(LIBPATH = ['#/lib'])
     env.Append(LIBPATH = ['#/raf'])
     if env['PLATFORM'] == 'darwin':
@@ -23,6 +23,7 @@ def vardb_global(env):
 
 env = Environment(tools=['default','prefixoptions'], GLOBAL_TOOLS=[vardb_global])
 
+SConscript('raf/SConscript')
 SConscript('lib/SConscript')
 SConscript('vdbdump/SConscript')
 SConscript('vdb2xml/SConscript')
