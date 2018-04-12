@@ -13,3 +13,16 @@ Directories:
 | vdbdump | Utility to produce an ASCII dump of a variable database. |
 | vdb2xml | Utility to convert an style binary VarDB to new style vardb.xml. |
 | vdb2ncml | Utility to convert an style binary VarDB to netCDF NCML output. |
+
+### Documentation ###
+
+### Environment ###
+
+### Dependencies ###
+
+ * python-devel
+ * log4cpp-devel
+ * xerces-c-devel
+ * boost-devel
+
+### Installation ###
