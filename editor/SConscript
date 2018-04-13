@@ -1,9 +1,9 @@
 # -*- python -*-
 
-env = Environment(tools=['default', 'vardb', 'netcdf'])
+env = Environment(tools=['default', 'vardb', 'netcdf', 'raf'])
 
 env.Append(CXXFLAGS=Split("-Wall -g -O2"))
-env.Append(LIBS=Split("raf Xm Xt X11 Xext"))
+env.Append(LIBS=Split("Xm Xt X11 Xext"))
 
 srcs = Split("vared.cc initv.cc Xwin.cc ccb.cc")
 

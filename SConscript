@@ -1,10 +1,5 @@
 # -*- python -*-
 
-
-import os
-import sys
-import eol_scons
-
 def vardb_global(env):
     "Copy prefix settings into the prefixoptions."
     env['DEFAULT_INSTALL_PREFIX'] = "$INSTALL_PREFIX"
@@ -12,11 +7,7 @@ def vardb_global(env):
     # libraries it links against must be relocatable, eg liblogx, libdomx,
     # and libVarDB.
     env.AppendUnique(CXXFLAGS=['-fPIC'])
-    env.Require('prefixoptions')
     env['VARDB_README_FILE'] = env.File("$INSTALL_PREFIX/README")
-    env.Append(CPPPATH = ['#/include'])
-    env.Append(LIBPATH = ['#/lib'])
-    env.Append(LIBPATH = ['#/raf'])
     if env['PLATFORM'] == 'darwin':
       env.Append(CPPPATH=['/opt/X11/include'])
       env.Append(LIBPATH=['/opt/X11/lib'])

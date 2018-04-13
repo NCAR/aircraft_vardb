@@ -16,7 +16,7 @@ libvardb = env.Library('VarDB', srcs)
 env.Default(libvardb)
 
 env.Install(env['INSTALL_PREFIX']+'/lib', libvardb)
-env.Install(env['INSTALL_PREFIX']+'/vardb/raf', headers)
+env.Install(env['INSTALL_PREFIX']+'/include/raf', headers)
 env.Install('#/../man/man3', "vardb.3")
 
 libdir = env.Dir('.')

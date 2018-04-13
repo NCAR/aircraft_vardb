@@ -1,9 +1,8 @@
 # -*- python -*-
 
-env = Environment(tools=['default', 'vardb', 'netcdf'])
+env = Environment(tools=['default', 'vardb', 'netcdf','raf'])
 
 env.Append(CXXFLAGS=Split("-Wall -g -O2"))
-env.Append(LIBS=['raf'])
 
 vdb2xml = env.Program("vdb2xml.cc")
 
