@@ -14,3 +14,7 @@ def Vardb(env):
 env = Environment(GLOBAL_TOOLS = [Vardb])
 
 SConscript('SConscript')
+
+variables = env.GlobalVariables()
+variables.Update(env)
+Help(variables.GenerateHelpText(env))

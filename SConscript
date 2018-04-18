@@ -24,7 +24,3 @@ SConscript('python/SConscript')
 SConscript('tests/SConscript')
 
 env.Alias('apidocs', env.Dir("apidocs"))
-
-variables = env.GlobalVariables()
-variables.Update(env)
-Help(variables.GenerateHelpText(env))
