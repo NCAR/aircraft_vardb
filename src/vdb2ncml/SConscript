@@ -1,6 +1,6 @@
 # -*- python -*-
 
-env = Environment(tools=['default', 'vardb', 'netcdf', 'raf'])
+env = Environment(tools=['default', 'prefixoptions', 'vardb', 'netcdf', 'raf'])
 
 env.Append(CXXFLAGS=Split("-Wall -g -O2"))
 

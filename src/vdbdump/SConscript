@@ -1,6 +1,6 @@
 # -*- python -*-
 
-env = Environment(tools=['default','vardb'])
+env = Environment(tools=['default', 'prefixoptions', 'vardb'])
 
 env.Append(CXXFLAGS=Split("-Wall -g -O2"))
 

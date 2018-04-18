@@ -1,6 +1,6 @@
 # -*- python -*-
 
-env = Environment(tools=['default', 'text2cc', 'domx', 'boost_regex'])
+env = Environment(tools=['default', 'prefixoptions', 'text2cc', 'domx', 'boost_regex'])
 
 env.Append(CXXFLAGS=Split("-Wall -g -O2"))
 

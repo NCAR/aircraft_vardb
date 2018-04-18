@@ -1,6 +1,6 @@
 # -*- python -*-
 
-env = Environment(tools=['default'])
+env = Environment(tools=['default','prefixoptions'])
 
 modules = Split("""
 addSignal.py
