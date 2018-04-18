@@ -10,3 +10,4 @@
 [submodule "raf"]
 	path = raf
 	url = https://github.com/ncar/libraf
+	branch = improve_scons
