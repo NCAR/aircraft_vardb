@@ -8,8 +8,8 @@
 import eol_scons
 
 def Vardb(env):
-    env['DEFAULT_INSTALL_PREFIX']="#"
     env['DEFAULT_OPT_PREFIX']="#"
+    env['DEFAULT_INSTALL_PREFIX']="#"
 
 env = Environment(GLOBAL_TOOLS = [Vardb])
 

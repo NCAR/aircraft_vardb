@@ -2,12 +2,14 @@
 
 def vardb_global(env):
     "Copy prefix settings into the prefixoptions."
-    env['DEFAULT_INSTALL_PREFIX'] = "$INSTALL_PREFIX"
     # The python wrapper must be built as a shared library, and so all the
     # libraries it links against must be relocatable, eg liblogx, libdomx,
     # and libVarDB.
     env.AppendUnique(CXXFLAGS=['-fPIC'])
     env['VARDB_README_FILE'] = env.File("$INSTALL_PREFIX/README")
+    env.Append(CPPPATH = ['$OPT_PREFIX/lib'])
+    env.Append(LIBPATH = ['$OPT_PREFIX/lib'])
+    env.Append(LIBPATH = ['$OPT_PREFIX/raf'])
     if env['PLATFORM'] == 'darwin':
       env.Append(CPPPATH=['/opt/X11/include'])
       env.Append(LIBPATH=['/opt/X11/lib'])
@@ -15,12 +17,12 @@ def vardb_global(env):
 env = Environment(tools=['default','prefixoptions'], GLOBAL_TOOLS=[vardb_global])
 
 SConscript('raf/SConscript')
-SConscript('lib/SConscript')
-SConscript('vdbdump/SConscript')
-SConscript('vdb2xml/SConscript')
-SConscript('vdb2ncml/SConscript')
+SConscript('src/vardb/SConscript')
+SConscript('src/vdbdump/SConscript')
+SConscript('src/vdb2xml/SConscript')
+SConscript('src/vdb2ncml/SConscript')
 SConscript('editpy/SConscript')
-SConscript('editor/SConscript')
+SConscript('src/editor/SConscript')
 SConscript('python/SConscript')
 SConscript('tests/SConscript')
 
