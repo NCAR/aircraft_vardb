@@ -4,7 +4,9 @@ The variable database does not use an actual databae, but is rather an XML file.
 
 The OAP file format can be found at http://www.eol.ucar.edu/raf/software/OAPfiles.html
 
-Directories:
+### Documentation ###
+
+Directories in the aircraft_vardb library.
 
 | Directory | Description |
 | ----------- | ----------------------------------------------------------------------------------------- |
@@ -14,15 +16,27 @@ Directories:
 | vdb2xml | Utility to convert an style binary VarDB to new style vardb.xml. |
 | vdb2ncml | Utility to convert an style binary VarDB to netCDF NCML output. |
 
-### Documentation ###
-
 ### Environment ###
 
+The aircraft_vardb libraries are written in C. The utilities build and run on any Unix/Linux operating system, including Mac OS X.
+
 ### Dependencies ###
+
+To install these programs on your computer, ensure the following libraries are installed:
 
  * python-devel
  * log4cpp-devel
  * xerces-c-devel
  * boost-devel
 
+These programs depend on libraf, domx, logx, and site_scons, which are included as submodules to this repo. They are automatically downloaded by using --recursive on the command line.
+
 ### Installation ###
+
+* git clone --recursive https://github.com/ncar/aircraft_vardb
+* cd aircraft_vardb
+* scons  <- build libraries in their various subdirs
+* scons install   <- install under vardb/lib, vardb/include, and vardb/bin
+* scons install --prefix=<path_to_install_dir>  <- Install under a dir of your choosing
+
+These libraries may be used by placing a "-lVarDB" in your compile statement.
