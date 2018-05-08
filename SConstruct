@@ -19,10 +19,11 @@ AddOption('--prefix',
 def Vardb(env):
     if GetOption('prefix') != "#":
         env.Replace(DEFAULT_INSTALL_PREFIX = GetOption('prefix'))
+        env.Replace(DEFAULT_OPT_PREFIX = GetOption('prefix'))
     else:
         env['DEFAULT_INSTALL_PREFIX']="#"
+        env['DEFAULT_OPT_PREFIX']="#"
 
-    env['DEFAULT_OPT_PREFIX']="#"
     env.Require(['prefixoptions'])
 
 env = Environment(GLOBAL_TOOLS = [Vardb])
