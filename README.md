@@ -33,10 +33,14 @@ These programs depend on libraf, domx, logx, and site_scons, which are included 
 
 ### Installation ###
 
+The aircraft_vardb libraries can either be installed in the local directory, or redirected to install in a common area (such as /opt/local in a linux system).
+
+To install everything locally in the current working directory:
 * git clone --recursive https://github.com/ncar/aircraft_vardb
 * cd aircraft_vardb
-* scons  <- build libraries in their various subdirs
 * scons install   <- install under vardb/lib, vardb/include, and vardb/bin
+
+To install in a common area, first download and install site_scons, libraf, domx, and logx in a common area. Then use to --prefix option to point to that area and install libvardb under that same area.
 * scons install --prefix=<path_to_install_dir>  <- Install under a dir of your choosing
 
 These libraries may be used by placing a "-lVarDB" in your compile statement.
