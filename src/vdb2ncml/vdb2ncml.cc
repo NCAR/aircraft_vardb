@@ -129,7 +129,7 @@ void checkDependencies(int ncid, int varID, const char *varName)
 /* -------------------------------------------------------------------- */
 int main(int argc, char *argv[])
 {
-  int	i = 1, ncid, timeDim, varID, noDim;
+  int	i = 1, ncid, timeDim, varID;
   char	outFile[512];
   const char *p;
 
