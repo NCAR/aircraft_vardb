@@ -10,7 +10,7 @@ pysrcs = Split("vardb/__init__.py vardb/Variable.py")
 tests = Split("vardb/test_vardb.py")
 
 pg = env.PostgresTestDB()
-sql = env.File("../../nagios-qc/winter-real-time.sql")
+sql = env.File("winter-real-time.sql.gz")
 
 env.AppendENVPath('PYTHONPATH', env.Dir("#/../python").get_abspath())
 env.AppendENVPath('PYTHONPATH', env.Dir('.').get_abspath())
