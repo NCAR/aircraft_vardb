@@ -1,12 +1,12 @@
 [submodule "site_scons"]
 	path = site_scons
-	url = https://github.com/ncareol/eol_scons
+	url = https://github.com/ncar/eol_scons
 [submodule "logx"]
 	path = logx
-	url = https://github.com/ncareol/logx
+	url = https://github.com/ncar/logx
 [submodule "domx"]
 	path = domx
-	url = https://github.com/ncareol/domx
+	url = https://github.com/ncar/domx
 [submodule "raf"]
 	path = raf
 	url = https://github.com/ncar/libraf
