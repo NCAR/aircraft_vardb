@@ -104,7 +104,7 @@ def test_variable():
 def test_variables_from_database():
     vlist = VariableList()
     vlist.setDatabaseSpecifier('env')
-    # vlist.hostname = "eol-rt-data.fl-ext.ucar.edu"
+    # vlist.hostname = "eol-rt-data.eol.ucar.edu"
     # vlist.dbname = "real-time-C130"
     vars = vlist.loadVariables()
     thdg = vars['THDG']

@@ -59,10 +59,10 @@ class VariableList(object):
             self.hostname = "acserver"
         elif hostspec == 'c130':
             self.dbname = "real-time-C130"
-            self.hostname = "eol-rt-data.fl-ext.ucar.edu"
+            self.hostname = "eol-rt-data.eol.ucar.edu"
         elif hostspec == 'gv':
             self.dbname = "real-time-GV"
-            self.hostname = "eol-rt-data.fl-ext.ucar.edu"
+            self.hostname = "eol-rt-data.eol.ucar.edu"
         elif hostspec == 'env':
             self.dbname = None
             self.hostname = None
