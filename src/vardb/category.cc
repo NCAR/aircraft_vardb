@@ -30,8 +30,7 @@ COPYRIGHT:	University Corporation for Atmospheric Research, 1994-2006
 
 #include "vardb.h"
 #include <netcdf.h>
-
-#include <netinet/in.h> // htonl macros.
+#include <raf/portable.h>
 
 #define MAX_CATEGORIES	128
 #define CAT_NAME_LEN	64
@@ -160,10 +159,9 @@ char **VarDB_GetVariablesInCategory(int catNum)
     {
     if (ReadCategories() == ERR)
       return((char **)ERR);
- 
+
     firstTime = FALSE;
     }
- 
 
   cnt = 0;
   p = (char **)malloc(sizeof(char *));
@@ -192,10 +190,10 @@ int VarDB_GetCategoryList(char *list[])
     {
     if (ReadCategories() == ERR)
       return(ERR);
- 
+
     firstTime = FALSE;
     }
- 
+
 
   for (i = 0; i < nCategories; ++i)
     list[i] = Category[i]->Name;
@@ -215,10 +213,10 @@ int VarDB_GetCategoryNumber(const char catagoryName[])
     {
     if (ReadCategories() == ERR)
       return(ERR);
- 
+
     firstTime = FALSE;
     }
- 
+
 
   for (i = 0; i < nCategories; ++i)
     if (strcmp(catagoryName, Category[i]->Name) == 0)

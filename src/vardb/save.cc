@@ -16,7 +16,6 @@ COPYRIGHT:	University Corporation for Atmospheric Research, 1993-2006
 
 #include <stdio.h>
 #include <sys/types.h>
-#include <netinet/in.h> // htonl macros.
 
 #include "vardb.h"
 #include <raf/portable.h>

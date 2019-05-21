@@ -26,7 +26,7 @@ COPYRIGHT:	University Corporation for Atmospheric Research, 2005-06
 #include "vardb.h"
 #include <netcdf.h>
 
-#include <netinet/in.h> // htonl macros.
+#include <raf/portable.h>
 
 #define MAX_STD_NAMES	128
 #define STD_NAME_LEN	64
@@ -155,16 +155,16 @@ char **VarDB_GetVariablesInStandardName(int catNum)
     {
     if (ReadStandardNames() == ERR)
       return((char **)ERR);
- 
+
     firstTime = FALSE;
     }
- 
+
 
   cnt = 0;
   p = (char **)malloc(sizeof(char *));
 
   for (i = 0; i < VarDB_nRecords; ++i)
-    if (ntohl(((struct var_v2 *)VarDB)[i].standard_name) == 
+    if (ntohl(((struct var_v2 *)VarDB)[i].standard_name) ==
 	(unsigned int)catNum)
       {
       p = (char **)realloc(p, sizeof(char *) * (cnt+2));
@@ -188,10 +188,10 @@ int VarDB_GetStandardNameList(char *list[])
     {
     if (ReadStandardNames() == ERR)
       return(ERR);
- 
+
     firstTime = FALSE;
     }
- 
+
 
   for (i = 0; i < nStdNames; ++i)
     list[i] = StdName[i]->Name;
@@ -211,10 +211,10 @@ int VarDB_GetStandardNameNumber(const char catagoryName[])
     {
     if (ReadStandardNames() == ERR)
       return(ERR);
- 
+
     firstTime = FALSE;
     }
- 
+
 
   for (i = 0; i < nStdNames; ++i)
     if (strcmp(catagoryName, StdName[i]->Name) == 0)

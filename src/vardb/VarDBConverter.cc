@@ -6,7 +6,6 @@
 #include <raf/portable.h>  // for ntohf()
 #include <fstream>
 #include <sstream>
-#include <arpa/inet.h>     // for ntohl()
 
 #include "vardb.h"
 
@@ -35,7 +34,7 @@ VarDBConverter::
 setupProjDir(const std::string& vardbarg)
 {
   string dbdir(vardbarg);
-  
+
   if (dbdir.find('/') != string::npos)
   {
     dbdir.erase(dbdir.rfind('/')+1, dbdir.length());
@@ -184,7 +183,7 @@ checkDependencies(VDBFile& vdb)
           exit(1);
         }
         while (isspace(*p))
-	{ 
+	{
 	  ++p;
 	}
 	var->set_attribute(VDBVar::DEPENDENCIES, p);
@@ -277,7 +276,7 @@ open(VDBFile* vdb_in, const std::string& path)
       var->set_attribute(VDBVar::MIN_LIMIT, ntohf(vp->MinLimit));
       var->set_attribute(VDBVar::MAX_LIMIT, ntohf(vp->MaxLimit));
     }
-  
+
     string category = VarDB_GetCategoryName(vp->Name);
     if (category != "None")
     {
@@ -333,7 +332,7 @@ update_dictionary()
     "/home/local/raf/vardb/utils/vdb2xml/Dictionary";
   std::ifstream dictionaryNames;
   dictionaryNames.open(dictionaryLocation.c_str());
-  
+
   std::string raw_line,named,definition;
   while(std::getline(dictionaryNames,raw_line))
   {

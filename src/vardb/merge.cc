@@ -20,8 +20,7 @@ COPYRIGHT:	University Corporation for Atmospheric Research, 1993-7
 #include <cstdlib>
 #include <cstring>
 #include "vardb.h"
-
-#include <netinet/in.h> // htonl macros.
+#include <raf/portable.h>
 
 extern const long	VarDB_MagicCookie, VarDB_CurrentVersion;
 extern long		VarDB_RecLength;

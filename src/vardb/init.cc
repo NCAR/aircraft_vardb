@@ -21,7 +21,6 @@ COPYRIGHT:	University Corporation for Atmospheric Research, 1993-2006
 #include <cstring>
 
 #include <sys/param.h>
-#include <netinet/in.h>	// htonl macros.
 
 #include "vardb.h"
 #include <netcdf.h>

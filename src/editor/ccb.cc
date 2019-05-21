@@ -24,7 +24,6 @@ COPYRIGHT:	University Corporation for Atmospheric Research, 1993-2011
 #include <cstdio>
 #include <cstdlib>
 #include <sys/types.h>
-#include <netinet/in.h> // htonl macros.
 
 #include <Xm/List.h>
 #include <Xm/PushB.h>

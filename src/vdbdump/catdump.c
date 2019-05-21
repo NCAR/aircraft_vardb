@@ -13,9 +13,9 @@ COPYRIGHT:	University Corporation for Atmospheric Research, 1999-2006
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
-#include <netinet/in.h> // htonl macros.
 
 #include <vardb.h>
+#include <portable.h>
 
 extern long	VarDB_nRecords;
 
