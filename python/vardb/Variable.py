@@ -1,11 +1,11 @@
 "The Variable class for representing a RAF variable and its metadata."
 
+import os
+import logging
+import psycopg2 as pg
+
 from vardb import VDBVar
 from vardb import VDBFile
-import psycopg2 as pg
-import os
-
-import logging
 
 logger = logging.getLogger(__name__)
 

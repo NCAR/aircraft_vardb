@@ -1,9 +1,7 @@
 # -*- python -*-
 
 env = Environment(tools=['default', 'vardb', 'testing', 'pylint',
-                         'postgres_testdb'])
-env.MergeFlags('!python-config --includes')
-env.Append(LIBS='boost_python')
+                         'postgres_testdb', 'boost_python'])
 
 module = env.SharedLibrary(env.File('vardb/_vardb.so'), ['src/vardb.cc'])
 pysrcs = Split("vardb/__init__.py vardb/Variable.py")
@@ -15,7 +13,8 @@ sql = env.File("winter-real-time.sql.gz")
 env.AppendENVPath('PYTHONPATH', env.Dir("#/../python").get_abspath())
 env.AppendENVPath('PYTHONPATH', env.Dir('.').get_abspath())
 
-env.PythonLint('lint', pysrcs, PYLINTPYTHONPATH=env['ENV']['PYTHONPATH'])
+env.PythonLint('lint', pysrcs+module,
+               PYLINTPYTHONPATH=env['ENV']['PYTHONPATH'])
 
 runtest = env.TestRun('pytests', tests+module+pysrcs+[sql],
                       [ pg.action_init,
