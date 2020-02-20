@@ -1,5 +1,13 @@
 # -*- python -*-
 
+AddOption('--python',
+    dest='python',
+    type='string',
+    nargs=1,
+    action='store',
+    default='False',
+    help='compile python dir')
+
 def vardb_global(env):
     "Copy prefix settings into the prefixoptions."
     # The python wrapper must be built as a shared library, and so all the
@@ -23,7 +31,9 @@ SConscript('src/vdb2xml/SConscript')
 SConscript('src/vdb2ncml/SConscript')
 SConscript('editpy/SConscript')
 SConscript('src/editor/SConscript')
-SConscript('python/SConscript')
+if GetOption('python') == "True":
+    SConscript('python/SConscript')
 SConscript('tests/SConscript')
+
 
 env.Alias('apidocs', env.Dir("apidocs"))
