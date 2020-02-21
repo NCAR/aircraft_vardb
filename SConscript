@@ -2,9 +2,7 @@
 
 AddOption('--python',
     dest='python',
-    type='string',
-    nargs=1,
-    action='store',
+    action='store_true',
     default='False',
     help='compile python dir')
 
