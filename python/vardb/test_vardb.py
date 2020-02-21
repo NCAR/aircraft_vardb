@@ -2,7 +2,7 @@
 
 from vardb import VDBFile, VDBVar
 
-from Variable import Variable, VariableList, DataStore
+from .Variable import Variable, VariableList, DataStore
 
 import os.path
 import datetime

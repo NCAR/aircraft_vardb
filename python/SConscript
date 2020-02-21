@@ -13,7 +13,7 @@ sql = env.File("winter-real-time.sql.gz")
 env.AppendENVPath('PYTHONPATH', env.Dir("#/../python").get_abspath())
 env.AppendENVPath('PYTHONPATH', env.Dir('.').get_abspath())
 
-env.PythonLint('lint', pysrcs+module,
+env.PythonLint('lint', pysrcs,
                PYLINTPYTHONPATH=env['ENV']['PYTHONPATH'])
 
 runtest = env.TestRun('pytests', tests+module+pysrcs+[sql],

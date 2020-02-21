@@ -182,8 +182,8 @@ FROM variable_list;
 
     def selectVariable(self, vname):
         "Add the variable named @p vname to the select list, if it exists."
-        if self.variables.has_key(vname):
-            if not self.cmap.has_key(vname):
+        if vname in self.variables:
+            if not vname in self.cmap:
                 logger.debug("selecting variable %s" % (vname))
                 self.cmap[vname] = len(self.columns)
                 self.columns.append(vname)
@@ -214,7 +214,7 @@ SELECT %s FROM raf_lrt ORDER BY datetime DESC LIMIT %d;
                 var = self.variables[vname]
                 try:
                     datastore.appendValue(var, float(r[i]))
-                except TypeError, err:
+                except TypeError as err:
                     logger.error("variable %s, column %i: "
                                  "cannot convert %s to float." %
                                  (vname, i, r[i]))
@@ -241,7 +241,7 @@ class DataStore(object):
 
     def appendValue(self, variable, value):
         vname = variable.name
-        if not self.variables.has_key(vname):
+        if not vname in self.variables:
             self.variables[vname] = variable
             self.values[vname] = [value]
         else:
