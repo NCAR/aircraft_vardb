@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 # should be an API in both C++ and Python which provides a single,
 # consistent, consolidated view of variables and metadata.
 
-class VariableList(object):
+class VariableList:
     """
     Provide a consolidated, consistent list of real-time
     variables and metadata from the SQL database and VDB file.
@@ -107,7 +107,7 @@ class VariableList(object):
     def aircraftFromPlatform(self, platform):
         if platform == "N130AR":
             return "C130_N130AR"
-        elif platform == "N677F":
+        if platform == "N677F":
             return "GV_N677F"
         return platform
 
@@ -162,7 +162,7 @@ FROM variable_list;
         if not vdb.is_valid():
             raise Exception("failed to open %s" % (self.vdbpath))
         variables = {}
-        for i in xrange(vdb.num_vars()):
+        for i in range(vdb.num_vars()):
             vdbvar = vdb.get_var_at(i)
             var = Variable(vdbvar.name)
             var.fromVDBVar(vdbvar)
@@ -214,7 +214,7 @@ SELECT %s FROM raf_lrt ORDER BY datetime DESC LIMIT %d;
                 var = self.variables[vname]
                 try:
                     datastore.appendValue(var, float(r[i]))
-                except TypeError as err:
+                except TypeError:
                     logger.error("variable %s, column %i: "
                                  "cannot convert %s to float." %
                                  (vname, i, r[i]))
@@ -223,7 +223,7 @@ SELECT %s FROM raf_lrt ORDER BY datetime DESC LIMIT %d;
         return datastore
 
 
-class DataStore(object):
+class DataStore:
     "Simple container for a subset of data from the database."
 
     def __init__(self):
@@ -249,7 +249,7 @@ class DataStore(object):
 
     def setValues(self, variable, values):
         vname = variable.name
-        if not self.variables.has_key(vname):
+        if not vname in self.variables:
             self.variables[vname] = variable
         self.values[vname] = values
 
@@ -274,7 +274,7 @@ class DataStore(object):
         return values
 
 
-class Variable(object):
+class Variable:
 
     _attributes = {
         VDBVar.UNITS : str,
