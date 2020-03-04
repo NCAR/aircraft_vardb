@@ -3,7 +3,7 @@
 env = Environment(tools=['default', 'prefixoptions', 'text2cc',
                          'domx', 'boost_regex'])
 
-env.Append(CXXFLAGS=Split("-Wall -g -O2"))
+env.Append(CXXFLAGS=Split("-std=c++11 -Wall -g -O2"))
 
 headers = Split("vardb.h vardb.hh VarDBConverter.hh")
 srcs = Split("""
