@@ -3,7 +3,7 @@
 AddOption('--python',
     dest='python',
     action='store_true',
-    default='False',
+    default=False,
     help='compile python dir')
 
 def vardb_global(env):
@@ -29,7 +29,7 @@ SConscript('src/vdb2xml/SConscript')
 SConscript('src/vdb2ncml/SConscript')
 SConscript('editpy/SConscript')
 SConscript('src/editor/SConscript')
-if GetOption('python') == "True":
+if GetOption('python'):
     SConscript('python/SConscript')
 SConscript('tests/SConscript')
 
