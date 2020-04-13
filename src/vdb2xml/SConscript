@@ -2,7 +2,7 @@
 
 env = Environment(tools=['default', 'prefixoptions', 'vardb', 'vardbconverter'])
 
-env.Append(CXXFLAGS=Split("-Wall -g -O2"))
+env.Append(CXXFLAGS=Split("-std=c++11 -Wall -g -O2"))
 
 vdb2xml = env.Program("vdb2xml.cc")
 
