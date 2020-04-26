@@ -28,7 +28,7 @@ COPYRIGHT:	University Corporation for Atmospheric Research, 1994-2006
 #include <cstdlib>
 #include <cstring>
 
-#include "vardb.h"
+#include "raf/vardb.h"
 #include <netcdf.h>
 #include <raf/portable.h>
 

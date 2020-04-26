@@ -13,7 +13,7 @@ COPYRIGHT:	University Corporation for Atmospheric Research, 1993-2011
 #include <stdio.h>
 #include <sys/types.h>
 
-#include "vardb.h"
+#include "raf/vardb.h"
 #include <netcdf.h>
 #include <raf/portable.h>
 

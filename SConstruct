@@ -17,18 +17,13 @@ AddOption('--prefix',
   help='installation prefix')
 
 def Vardb(env):
-    if GetOption('prefix') != "#":
-        env.Replace(DEFAULT_INSTALL_PREFIX = GetOption('prefix'))
-        env.Replace(DEFAULT_OPT_PREFIX = GetOption('prefix'))
-    else:
-        env['DEFAULT_INSTALL_PREFIX']="#"
-        env['DEFAULT_OPT_PREFIX']="#"
-
+    env['DEFAULT_INSTALL_PREFIX'] = GetOption('prefix')
+    env['DEFAULT_OPT_PREFIX'] = GetOption('prefix')
     env.Require(['prefixoptions'])
 
 env = Environment(GLOBAL_TOOLS = [Vardb])
 
-SConscript('SConscript')
+SConscript('tool_vardb.py')
 
 variables = env.GlobalVariables()
 variables.Update(env)

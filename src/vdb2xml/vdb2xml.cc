@@ -11,7 +11,7 @@ COPYRIGHT:	University Corporation for Atmospheric Research, 2006
 -------------------------------------------------------------------------
 */
 
-#include <VarDBConverter.hh>
+#include <raf/VarDBConverter.hh>
 
 #include <iostream>
 #include <string>

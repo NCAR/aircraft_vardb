@@ -22,7 +22,7 @@
 using xercesc::XMLString;
 #define _vardb_cc_
 namespace xercesc_forward = xercesc;
-#include "vardb.hh"
+#include "raf/vardb.hh"
 
 using namespace xercesc;
 using namespace std;

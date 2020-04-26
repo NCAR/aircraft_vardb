@@ -2,7 +2,7 @@
 #include <iosfwd>
 #include <gtest/gtest.h>
 
-#include "vardb.hh"
+#include "raf/vardb.hh"
 #include "logx/Logging.h"
 
 #include <cstdlib>

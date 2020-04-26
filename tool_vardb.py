@@ -19,10 +19,6 @@ def vardb_global(env):
 
 env = Environment(tools=['default','prefixoptions'], GLOBAL_TOOLS=[vardb_global])
 
-if env['DEFAULT_OPT_PREFIX'] == "#": 	# build locally
-    SConscript('raf/SConscript')
-# If not built locally, the raf tool under eol_scons will add libraf to the path.
-
 SConscript('src/vardb/SConscript')
 SConscript('src/vdbdump/SConscript')
 SConscript('src/vdb2xml/SConscript')
@@ -32,6 +28,5 @@ SConscript('src/editor/SConscript')
 if GetOption('python'):
     SConscript('python/SConscript')
 SConscript('tests/SConscript')
-
 
 env.Alias('apidocs', env.Dir("apidocs"))

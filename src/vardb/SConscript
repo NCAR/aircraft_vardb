@@ -5,7 +5,7 @@ env = Environment(tools=['default', 'prefixoptions', 'text2cc',
 
 env.Append(CXXFLAGS=Split("-std=c++11 -Wall -g -O2"))
 
-headers = Split("vardb.h vardb.hh VarDBConverter.hh")
+headers = Split("raf/vardb.h raf/vardb.hh raf/VarDBConverter.hh")
 srcs = Split("""
 init.cc get.cc set.cc save.cc merge.cc sort.cc category.cc std_name.cc 
 VDBFile.cc VDBVar.cc VDBDictionary.cc VarDBConverter.cc

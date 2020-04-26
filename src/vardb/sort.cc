@@ -20,7 +20,7 @@ COPYRIGHT:	University Corporation for Atmospheric Research, 1993
 
 #include <stdio.h>
 #include <string.h>
-#include "vardb.h"
+#include "raf/vardb.h"
 
 extern long	VarDB_nRecords;
 

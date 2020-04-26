@@ -19,7 +19,7 @@ COPYRIGHT:	University Corporation for Atmospheric Research, 1993-7
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include "vardb.h"
+#include "raf/vardb.h"
 #include <raf/portable.h>
 
 extern const long	VarDB_MagicCookie, VarDB_CurrentVersion;

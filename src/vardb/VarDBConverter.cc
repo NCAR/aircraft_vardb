@@ -1,13 +1,13 @@
 
 
-#include "VarDBConverter.hh"
+#include "raf/VarDBConverter.hh"
 #include <cstdlib>
 #include <cstring>
 #include <raf/portable.h>  // for ntohf()
 #include <fstream>
 #include <sstream>
 
-#include "vardb.h"
+#include "raf/vardb.h"
 
 using std::string;
 using std::ostringstream;

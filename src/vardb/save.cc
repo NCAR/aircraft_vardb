@@ -17,7 +17,7 @@ COPYRIGHT:	University Corporation for Atmospheric Research, 1993-2006
 #include <stdio.h>
 #include <sys/types.h>
 
-#include "vardb.h"
+#include "raf/vardb.h"
 #include <raf/portable.h>
 
 extern long VarDB_RecLength, VarDB_nRecords;

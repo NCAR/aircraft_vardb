@@ -22,7 +22,7 @@ COPYRIGHT:	University Corporation for Atmospheric Research, 1993-2006
 
 #include <sys/param.h>
 
-#include "vardb.h"
+#include "raf/vardb.h"
 #include <netcdf.h>
 #include <raf/portable.h>
 
