@@ -7,3 +7,4 @@ vdbdump
 .sconf_temp
 .sconsign.dblite
 config.log
+/tests/*-tests-contrast_vardb.xml
