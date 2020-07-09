@@ -29,12 +29,12 @@ usage()
   cerr << "Default output path: <VarDB_dir>/vardb.xml\n";
   cerr <<
     "PROJ_DIR must be set to locate the ModVars and DerivedNames\n"
-    "files under PROJ_DIR/Configuration/raf.  The VarDB file typically\n"
+    "files under $PROJ_DIR/Configuration.  The VarDB file typically\n"
     "resides in a project directory like PROJ_DIR/<project>/<platform>,\n"
     "so the project directory is derived from <VarDB_path>.\n"
     "Here are the required input files:\n"
-    "  PROJ_DIR/Configuration/raf/ModVars\n"
-    "  PROJ_DIR/Configuration/raf/DerivedNames\n"
+    "  PROJ_DIR/Configuration/ModVars\n"
+    "  PROJ_DIR/Configuration/DerivedNames\n"
     "  VarDB_dir/DependTable\n"
     "  VarDB_dir/StandardNames\n"
     "  VarDB_dir/Categories\n"

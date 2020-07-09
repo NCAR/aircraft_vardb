@@ -54,7 +54,7 @@ defaultProjDirPath(const std::string& filename)
     const char* projdir = getenv("PROJ_DIR");
     if (projdir)
     {
-      defaultProjDir = string(projdir) + "/Configuration/raf/";
+      defaultProjDir = string(projdir) + "/Configuration/";
     }
   }
   string path = defaultProjDir + filename;
@@ -329,7 +329,7 @@ update_dictionary()
   // not clear how to use it and where it should be maintained.
   fprintf(vdb,"  <Dictionary>\n");
   std::string dictionaryLocation =
-    "/home/local/raf/vardb/utils/vdb2xml/Dictionary";
+    "/home/local/vardb/utils/vdb2xml/Dictionary";
   std::ifstream dictionaryNames;
   dictionaryNames.open(dictionaryLocation.c_str());
 

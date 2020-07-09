@@ -146,7 +146,7 @@ int main(int argc, char *argv[])
   }
 
   strcpy(defaultProjDir, getenv("PROJ_DIR"));
-  strcat(defaultProjDir, "/Configuration/raf/");
+  strcat(defaultProjDir, "/Configuration/");
 
   if (strchr(argv[i], '/'))
   {

@@ -99,7 +99,7 @@ could be done by the schema.
 
 ### Incorporate Other Config Files as Possible ###
 
-Somehow reconcile the rest of the files in Configuration/raf and the
+Somehow reconcile the rest of the files in Configuration/ and the
 project directory associated with variable metadata and processing, eg,
 include _projdir_/Lags in vardb.xml.  From _defaultprojdir_ include
 SumVars, LowRateVars, Despike, and BcastVars, MetaDataTable.  These and the
