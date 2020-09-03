@@ -1,6 +1,6 @@
 /*
 -------------------------------------------------------------------------
-OBJECT NAME:	catagory.c
+OBJECT NAME:	category.c
 
 FULL NAME:	VarDB_ Category functions
 
@@ -77,7 +77,7 @@ int ReadCategories()
 
   if ((fp = fopen(fileName, "r")) == NULL)
     {
-    fprintf(stderr, "catagory.c: Can't open %s.\n", fileName);
+    fprintf(stderr, "category.c: Can't open %s.\n", fileName);
     return(ERR);
     }
 
@@ -88,8 +88,8 @@ int ReadCategories()
 
     if (nCategories >= MAX_CATEGORIES-1)
       {
-      fprintf(stderr, "vardb/lib/catagory.c: MAX_CATEGORIES exceeded.\n");
-      fprintf(stderr, " Ignoring extra catagories and continuing.\n");
+      fprintf(stderr, "vardb/lib/category.c: MAX_CATEGORIES exceeded.\n");
+      fprintf(stderr, " Ignoring extra categories and continuing.\n");
       fprintf(stderr, " Please notify a programmer of this problem.\n");
 
       fclose(fp);
@@ -205,7 +205,7 @@ int VarDB_GetCategoryList(char *list[])
 }	/* END VARDB_GETCATEGORYLIST */
 
 /* -------------------------------------------------------------------- */
-int VarDB_GetCategoryNumber(const char catagoryName[])
+int VarDB_GetCategoryNumber(const char categoryName[])
 {
   int	i;
 
@@ -219,7 +219,7 @@ int VarDB_GetCategoryNumber(const char catagoryName[])
 
 
   for (i = 0; i < nCategories; ++i)
-    if (strcmp(catagoryName, Category[i]->Name) == 0)
+    if (strcmp(categoryName, Category[i]->Name) == 0)
       return(Category[i]->Number);
 
   return(0);	/* Category 0 is "None"	*/

@@ -84,8 +84,8 @@ int ReadStandardNames()
 
     if (nStdNames >= MAX_STD_NAMES-1)
       {
-      fprintf(stderr, "vardb/lib/catagory.c: MAX_STD_NAME exceeded.\n");
-      fprintf(stderr, " Ignoring extra catagories and continuing.\n");
+      fprintf(stderr, "vardb/lib/category.c: MAX_STD_NAME exceeded.\n");
+      fprintf(stderr, " Ignoring extra categories and continuing.\n");
       fprintf(stderr, " Please notify a programmer of this problem.\n");
 
       fclose(fp);
@@ -203,7 +203,7 @@ int VarDB_GetStandardNameList(char *list[])
 }	/* END VARDB_GETSTANDARDNAMELIST */
 
 /* -------------------------------------------------------------------- */
-int VarDB_GetStandardNameNumber(const char catagoryName[])
+int VarDB_GetStandardNameNumber(const char categoryName[])
 {
   int i;
 
@@ -217,7 +217,7 @@ int VarDB_GetStandardNameNumber(const char catagoryName[])
 
 
   for (i = 0; i < nStdNames; ++i)
-    if (strcmp(catagoryName, StdName[i]->Name) == 0)
+    if (strcmp(categoryName, StdName[i]->Name) == 0)
       return(StdName[i]->Number);
 
   return(0);	/* Category 0 is "None"	*/
