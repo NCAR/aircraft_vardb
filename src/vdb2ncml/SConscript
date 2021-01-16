@@ -7,4 +7,6 @@ env.Append(CXXFLAGS=Split("-Wall -g -O2"))
 vdb2ncml = env.Program("vdb2ncml.cc")
 
 env.Default(vdb2ncml)
-env.Install(env['INSTALL_PREFIX']+'/bin', vdb2ncml)
+
+if env.get('INSTALL_VARDB') and env['INSTALL_VARDB'] == True:
+  env.Install(env['INSTALL_PREFIX']+'/bin', vdb2ncml)

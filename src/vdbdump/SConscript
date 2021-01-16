@@ -7,5 +7,6 @@ env.Append(CXXFLAGS=Split("-Wall -g -O2"))
 vdbdump = env.Program("vdbdump.cc")
 
 env.Default(vdbdump)
-env.Install(env['INSTALL_PREFIX']+'/bin', vdbdump)
 
+if env.get('INSTALL_VARDB') and env['INSTALL_VARDB'] == True:
+  env.Install(env['INSTALL_PREFIX']+'/bin', vdbdump)

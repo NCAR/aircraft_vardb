@@ -10,5 +10,6 @@ srcs = Split("vared.cc initv.cc Xwin.cc ccb.cc")
 vared = env.Program("vared", srcs)
 
 env.Default(vared)
-env.Install(env['INSTALL_PREFIX']+'/bin', vared)
 
+if env.get('INSTALL_VARDB') and env['INSTALL_VARDB'] == True:
+  env.Install(env['INSTALL_PREFIX']+'/bin', vared)

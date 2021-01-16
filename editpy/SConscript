@@ -16,5 +16,6 @@ windowSetup.py
 """)
 
 # Targets are only to install files.
-env.Install(env['INSTALL_PREFIX']+'/bin', 'vdbEditor')
-env.Install(env['INSTALL_PREFIX']+'/lib/python/site-packages/vardb', modules)
+if env.get('INSTALL_VARDB') and env['INSTALL_VARDB'] == True:
+  env.Install(env['INSTALL_PREFIX']+'/bin', 'vdbEditor')
+  env.Install(env['INSTALL_PREFIX']+'/lib/python/site-packages/vardb', modules)

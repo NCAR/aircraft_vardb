@@ -7,19 +7,13 @@
 
 import eol_scons
 
-AddOption('--prefix',
-  dest='prefix',
-  type='string',
-  nargs=1,
-  action='store',
-  metavar='DIR',
-  default='#',
-  help='installation prefix')
-
 def Vardb(env):
-    env['DEFAULT_INSTALL_PREFIX'] = GetOption('prefix')
-    env['DEFAULT_OPT_PREFIX'] = GetOption('prefix')
+    env['INSTALL_VARDB'] = install_vdb
     env.Require(['prefixoptions'])
+
+install_vdb = False
+if Dir('#') == Dir('.') :
+  install_vdb = True
 
 env = Environment(GLOBAL_TOOLS = [Vardb])
 

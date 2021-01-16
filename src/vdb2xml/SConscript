@@ -7,4 +7,6 @@ env.Append(CXXFLAGS=Split("-std=c++11 -Wall -g -O2"))
 vdb2xml = env.Program("vdb2xml.cc")
 
 env.Default(vdb2xml)
-env.Install(env['INSTALL_PREFIX']+'/bin', vdb2xml)
+
+if env.get('INSTALL_VARDB') and env['INSTALL_VARDB'] == True:
+  env.Install(env['INSTALL_PREFIX']+'/bin', vdb2xml)
