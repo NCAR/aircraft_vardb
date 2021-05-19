@@ -32,7 +32,7 @@ extern long	VarDB_nRecords;
 /* -------------------------------------------------------------------- */
 void checkModVars(int ncid, int varID, const char *varName)
 {
-  char fileName[500], buffer[1000], name[100];
+  char fileName[500], buffer[BUFSIZ], name[100];
   strcpy(fileName, defaultProjDir);
   strcat(fileName, "ModVars");
 
@@ -61,7 +61,7 @@ void checkModVars(int ncid, int varID, const char *varName)
 /* -------------------------------------------------------------------- */
 void checkDerivedNames(int ncid, int varID, const char *varName)
 {
-  char fileName[500], buffer[1000], *p;
+  char fileName[500], buffer[BUFSIZ], *p;
   strcpy(fileName, defaultProjDir);
   strcat(fileName, "DerivedNames");
 
@@ -93,7 +93,7 @@ void checkDerivedNames(int ncid, int varID, const char *varName)
 /* -------------------------------------------------------------------- */
 void checkDependencies(int ncid, int varID, const char *varName)
 {
-  char fileName[500], buffer[1000], *p;
+  char fileName[500], buffer[BUFSIZ], *p;
   strcpy(fileName, projDir);
   strcat(fileName, "DependTable");
 

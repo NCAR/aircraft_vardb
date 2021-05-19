@@ -114,7 +114,7 @@ VarDBConverter::
 checkDerivedNames(VDBFile& vdb)
 {
   string path = defaultProjDirPath("DerivedNames");
-  char buffer[1000];
+  char buffer[BUFSIZ];
 
   FILE *fp;
   if ((fp = fopen(path.c_str(), "r")) == NULL)
@@ -149,7 +149,7 @@ void
 VarDBConverter::
 checkDependencies(VDBFile& vdb)
 {
-  char buffer[1000], *p;
+  char buffer[BUFSIZ], *p;
 
   string path = projDirPath("DependTable");
 
