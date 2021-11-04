@@ -34,15 +34,16 @@ const char * getAircraftName(int num);
 /* -------------------------------------------------------------------- */
 void Initialize(int argc, char *argv[])
 {
-  int	pnum = atoi(argv[1]);
-
-  ProjectDirectory = (char *)getenv("PROJ_DIR");
-
   if (argc < 2)
     {
     fprintf(stderr, "Usage: vared var_db_file\n");
     exit(1);
     }
+
+  int	pnum = atoi(argv[1]);
+
+  ProjectDirectory = (char *)getenv("PROJ_DIR");
+
 
   if (pnum > 99)
     sprintf(FileName, "%s/%d/%s/VarDB", ProjectDirectory, pnum, getAircraftName(pnum));
