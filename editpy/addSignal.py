@@ -42,7 +42,7 @@ def addsignal(signals,self,num,instructions):
                   for sig in signals:
                      if elm[i].tag == sig[0] and elm[i].text != sig[1]:
                         elm[i].text=sig[1]
-                        print 'changed ', elm.attrib['name'],": ",elm[i].tag,' to '+elm[i].text+'.'
+                        print('changed ', elm.attrib['name'],": ",elm[i].tag,' to '+elm[i].text+'.')
                         print>>log, 'changed ', elm.attrib['name'],": ",elm[i].tag,' to '+elm[i].text+'.'
                   i+=1
 
@@ -63,25 +63,25 @@ def addsignal(signals,self,num,instructions):
                            att.addnext(newAtt[j])
                            break
                      j+=1
-                     print 'Added ',sig[0],' to ',elm.attrib['name'],' set as ',sig[1]
+                     print('Added ',sig[0],' to ',elm.attrib['name'],' set as ',sig[1])
                      print>>log, 'Added ',sig[0],' to ',elm.attrib['name'],' set as ',sig[1]
 
                #check for blank entries, remove them
                for att in elm:
                    if str(att.text)=='':#and str(att.tag) not in [s[0] for s in self.catelogList]:
-                      print 'removed ',att.tag,' from ',elm.attrib['name']
+                      print('removed ',att.tag,' from ',elm.attrib['name'])
                       print>>log, 'removed ',att.tag,' from ',elm.attrib['name']
                       elm.remove(att)
         if added==False:
             instructions['action']='new signal'
-            print str(signals[0][1]).upper(),' not found in VDB. Creating new entry.'
+            print(str(signals[0][1]).upper(),' not found in VDB. Creating new entry.')
             print>>log, str(signals[0][1]).upper(),' not found in VDB. Creating new entry.'
 #++++++++++++
    if instructions['action']=='delete':
       for elm in root.iter('variable'):
           if elm.attrib['name']==signals:
              elm.getparent().remove(elm)
-             print 'removed ',signals
+             print('removed ',signals)
              print>>log, 'removed ',signals
             
 #+++++++++++
@@ -91,7 +91,7 @@ def addsignal(signals,self,num,instructions):
 
        #Check for name input
        if signals[0][0]!='name' : 
-           print 'exit code 1 in addsignal.py: no name was input'
+           print('exit code 1 in addsignal.py: no name was input')
            print>>log, 'exit code 1 in addsignal.py: no name was input'
            quit()
 
@@ -116,8 +116,8 @@ def addsignal(signals,self,num,instructions):
              elm.addprevious(new)
              added=True
              num=i
+             print('added ',signals[0][1])
              print>>log, 'added ',signals[0][1]
-             print 'added ',signals[0][1]
           i+=1
        if added==False:
           new = etree.Element('variable',name=signals[0][1].upper())
@@ -129,7 +129,7 @@ def addsignal(signals,self,num,instructions):
           elm.addnext(new)
           added=True
           num=i
-          print 'appended ',signals[0][1]
+          print('appended ',signals[0][1])
           print>>log, 'appended ',signals[0][1]
            
 #=============

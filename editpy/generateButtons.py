@@ -3,7 +3,7 @@
 #input:
 #    num is which radio button to leave selected,using getinfo() as reference list
 #    Filtering is search term
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtCore
 from getInfo import getinfo
 from setup import fileName
 def generateButtons(self,filtering,num):

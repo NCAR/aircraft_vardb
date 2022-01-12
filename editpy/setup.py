@@ -11,7 +11,7 @@ def setup(hbox,self,file):
       #Establish filename
       global fileLocation
       if len(sys.argv)==1:
-        print "please enter filename in command line"
+        print("please enter filename in command line")
         quit()
       fileLocation=str(sys.argv[1])
 
@@ -19,12 +19,12 @@ def setup(hbox,self,file):
 
       #some definitions
       from radioClickEvent import lookingAt
-      from PyQt4 import QtGui, QtCore
+      from PyQt5 import QtWidgets, QtCore
       self.booleanList=['reference','is_analog']
       self.catelogList=[['standard_name','standardNames'],['category','Categories']]
 
       #Create division between right up and down layouts
-      splitter1=QtGui.QSplitter(QtCore.Qt.Vertical)
+      splitter1=QtWidgets.QSplitter(QtCore.Qt.Vertical)
       splitter1.addWidget(self.upright)
       splitter1.addWidget(self.downright)
       splitter1.setStretchFactor(1,0)
@@ -32,16 +32,16 @@ def setup(hbox,self,file):
       hbox.addWidget(splitter1)
 
       #Create middle division
-      splitter2 = QtGui.QSplitter(QtCore.Qt.Horizontal)
+      splitter2 = QtWidgets.QSplitter(QtCore.Qt.Horizontal)
       splitter2.addWidget(self.left)
       splitter2.addWidget(splitter1)
       splitter2.setStretchFactor(1,1)
       splitter2.setSizes([180,420])
       hbox.addWidget(splitter2)
-      self.left.setFrameShape(QtGui.QFrame.StyledPanel)
-      self.downright.setFrameShape(QtGui.QFrame.StyledPanel)
-      self.upright.setFrameShape(QtGui.QFrame.StyledPanel)
-      QtGui.QApplication.setStyle(QtGui.QStyleFactory.create('Cleanlooks'))
+      self.left.setFrameShape(QtWidgets.QFrame.StyledPanel)
+      self.downright.setFrameShape(QtWidgets.QFrame.StyledPanel)
+      self.upright.setFrameShape(QtWidgets.QFrame.StyledPanel)
+      QtWidgets.QApplication.setStyle(QtWidgets.QStyleFactory.create('Cleanlooks'))
 
 #===========================================
 #Create scroll areas
@@ -50,20 +50,20 @@ def setup(hbox,self,file):
 #left area
   
       #Create scroll area
-#      self.left.scrollArea=QtGui.QScrollArea(self.left)
+#      self.left.scrollArea=QtWidgets.QScrollArea(self.left)
 #      self.left.scrollArea.setWidgetResizable(True)
-#      self.left.scrollAreaWidgetContents=QtGui.QListWidget(self.left.scrollArea)
+#      self.left.scrollAreaWidgetContents=QtWidgets.QListWidget(self.left.scrollArea)
 
-      self.left.scrollAreaWidgetContents=QtGui.QListWidget(self.left)
+      self.left.scrollAreaWidgetContents=QtWidgets.QListWidget(self.left)
 
       self.left.scrollAreaWidgetContents.itemSelectionChanged.connect(lambda:lookingAt(self))
 #      self.left.scrollArea.setWidget(self.left.scrollAreaWidgetContents)
-      self.left.verticalLayout=QtGui.QVBoxLayout(self.left)
-      self.left.verticalLayoutScroll=QtGui.QVBoxLayout(self.left.scrollAreaWidgetContents)
+      self.left.verticalLayout=QtWidgets.QVBoxLayout(self.left)
+      self.left.verticalLayoutScroll=QtWidgets.QVBoxLayout(self.left.scrollAreaWidgetContents)
       
       #Create search bar
-      searchLabel = QtGui.QLabel(" Search", self)
-      self.searchText = QtGui.QLineEdit()
+      searchLabel = QtWidgets.QLabel(" Search", self)
+      self.searchText = QtWidgets.QLineEdit()
       searchLabel.setBuddy(self.searchText)
 
       #Populate left side
@@ -74,14 +74,14 @@ def setup(hbox,self,file):
 #------------------------------------------------
 #right area
 
-      self.upright.scrollArea=QtGui.QScrollArea(self.upright)
+      self.upright.scrollArea=QtWidgets.QScrollArea(self.upright)
       self.upright.scrollArea.setWidgetResizable(True)
-      self.upright.scrollAreaWidgetContents=QtGui.QWidget(self.upright.scrollArea)
+      self.upright.scrollAreaWidgetContents=QtWidgets.QWidget(self.upright.scrollArea)
       self.upright.scrollArea.setWidget(self.upright.scrollAreaWidgetContents)
-      self.upright.verticalLayout=QtGui.QVBoxLayout(self.upright)
+      self.upright.verticalLayout=QtWidgets.QVBoxLayout(self.upright)
       self.upright.verticalLayout.addWidget(self.upright.scrollArea)
-      self.upright.verticalLayoutScroll=QtGui.QGridLayout(self.upright.scrollAreaWidgetContents)
-      #self.upright.verticalLayoutScroll=QtGui.QVBoxLayout(self.upright.scrollAreaWidgetContents)
+      self.upright.verticalLayoutScroll=QtWidgets.QGridLayout(self.upright.scrollAreaWidgetContents)
+      #self.upright.verticalLayoutScroll=QtWidgets.QVBoxLayout(self.upright.scrollAreaWidgetContents)
 #===================================================================
 
       return self

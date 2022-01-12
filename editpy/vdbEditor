@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 # Julian Quick; July 2014
 # GUI TO view and edit varDB
@@ -6,7 +6,7 @@
 
 import os
 import sys
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtWidgets, QtGui, QtCore
 
 sys.path.append(os.getenv('JLOCAL') + '/lib/python/site-packages')
 
@@ -15,7 +15,7 @@ from vardb.newSignal import newSig
 from vardb.generateButtons import generateButtons
 from vardb.setup import setup
 
-class GUI(QtGui.QWidget):
+class GUI(QtWidgets.QWidget):
     def __init__(self):
         super(GUI, self).__init__()
         self.initUI()
@@ -24,18 +24,18 @@ class GUI(QtGui.QWidget):
         self.setWindowTitle('Variable DB GUI')
 
         #Create option buttons
-        addButton=QtGui.QPushButton("Add Variable")
+        addButton=QtWidgets.QPushButton("Add Variable")
         addButton.pressed.connect(lambda: newSig(self))
-        self.saveButton=QtGui.QPushButton("Save Changes")
-        self.deleteButton=QtGui.QPushButton("Delete Selected variable")
-        quitButton=QtGui.QPushButton("Quit")
+        self.saveButton=QtWidgets.QPushButton("Save Changes")
+        self.deleteButton=QtWidgets.QPushButton("Delete Selected variable")
+        quitButton=QtWidgets.QPushButton("Quit")
         quitButton.clicked.connect(QtCore.QCoreApplication.instance().quit)
 
         #Creates left and right sections, search bar, scroll area
-        hbox = QtGui.QHBoxLayout(self)
-        self.left = QtGui.QFrame(self)
-        self.upright = QtGui.QFrame(self)
-        self.downright = QtGui.QFrame(self)
+        hbox = QtWidgets.QHBoxLayout(self)
+        self.left = QtWidgets.QFrame(self)
+        self.upright = QtWidgets.QFrame(self)
+        self.downright = QtWidgets.QFrame(self)
         self=setup(hbox,self, "vardb.xml")
         self.searchText.textEdited.connect(lambda: generateButtons(self,str(self.searchText.text()),0))
         self.setLayout(hbox)
@@ -44,8 +44,8 @@ class GUI(QtGui.QWidget):
         generateButtons(self,'',-1)
 
         #Option buttons layout
-        hlox=QtGui.QHBoxLayout()
-        hlox2=QtGui.QHBoxLayout()
+        hlox=QtWidgets.QHBoxLayout()
+        hlox2=QtWidgets.QHBoxLayout()
         hlox.addStretch(1)
         hlox.addWidget(addButton,1)
         hlox.addWidget(self.saveButton,1)
@@ -54,11 +54,11 @@ class GUI(QtGui.QWidget):
         hlox.addStretch()
         vbox=QtGui.QVBoxLayout()
         vbox.addStretch(1)
- 	vbox.addLayout(hlox)
- 	vbox.addLayout(hlox2)
+        vbox.addLayout(hlox)
+        vbox.addLayout(hlox2)
         self.downright.setLayout(vbox)
 
-app = QtGui.QApplication(sys.argv)
+app = QtWidgets.QApplication(sys.argv)
 ex = GUI()
 ex.show()
 app.processEvents()

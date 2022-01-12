@@ -2,7 +2,7 @@
 #Logical flow of functions is from bottom to top
 import getInfo
 from delete import delete
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtWidgets, QtCore
 from functools import partial 
 from setup import fileName
 
@@ -92,12 +92,12 @@ def makeRightInfoHub(self,headers):
 
    i=0
    while i<len(headers):
-     rightInfoHub['headers'][headers[i]]=QtGui.QLabel(headers[i],self.upright)
+     rightInfoHub['headers'][headers[i]]=QtWidgets.QLabel(headers[i],self.upright)
      self.upright.verticalLayoutScroll.addWidget(rightInfoHub['headers'][headers[i]],i,1)
 
      #Check for boolean variable
      if headers[i] in self.booleanList:
-        rightInfoHub['textBoxes'][headers[i]]=QtGui.QComboBox(self.upright)
+        rightInfoHub['textBoxes'][headers[i]]=QtWidgets.QComboBox(self.upright)
 
         #warning: preserve assignment order
         rightInfoHub['textBoxes'][headers[i]].addItem("true")
@@ -107,7 +107,7 @@ def makeRightInfoHub(self,headers):
         rightInfoHub['textBoxes'][headers[i]].activated.connect(lambda:textChange(self))
      #Check if variable is in catalog list
      elif headers[i] in (entry[0] for entry in self.catelogList):
-        rightInfoHub['textBoxes'][headers[i]]=QtGui.QComboBox(self.upright)
+        rightInfoHub['textBoxes'][headers[i]]=QtWidgets.QComboBox(self.upright)
 
         if headers[i]==self.catelogList[0][0]:
            stdList=getInfo.getStandardNames(fileName())
@@ -119,7 +119,7 @@ def makeRightInfoHub(self,headers):
           rightInfoHub['textBoxes'][headers[i]].addItem(item)
         rightInfoHub['textBoxes'][headers[i]].currentIndexChanged.connect(lambda:textChange(self))
      elif headers[i]=='default_sample_rate':
-        rightInfoHub['textBoxes'][headers[i]]=QtGui.QComboBox(self.upright)
+        rightInfoHub['textBoxes'][headers[i]]=QtWidgets.QComboBox(self.upright)
         rightInfoHub['textBoxes'][headers[i]].addItem("")
         rightInfoHub['textBoxes'][headers[i]].addItem("500")
         rightInfoHub['textBoxes'][headers[i]].addItem("100")
@@ -129,7 +129,7 @@ def makeRightInfoHub(self,headers):
         rightInfoHub['textBoxes'][headers[i]].activated.connect(partial(onActivated,self,headers[i]))
         rightInfoHub['textBoxes'][headers[i]].activated.connect(lambda:textChange(self))
      elif headers[i]=='voltage_range':
-        rightInfoHub['textBoxes'][headers[i]]=QtGui.QComboBox(self.upright)
+        rightInfoHub['textBoxes'][headers[i]]=QtWidgets.QComboBox(self.upright)
         rightInfoHub['textBoxes'][headers[i]].addItem("")
         rightInfoHub['textBoxes'][headers[i]].addItem("-10 10")
         rightInfoHub['textBoxes'][headers[i]].addItem("-5 5")
@@ -140,7 +140,7 @@ def makeRightInfoHub(self,headers):
         rightInfoHub['textBoxes'][headers[i]].activated.connect(partial(onActivated,self,headers[i]))
         rightInfoHub['textBoxes'][headers[i]].activated.connect(lambda:textChange(self))
      else:
-        rightInfoHub['textBoxes'][headers[i]]=QtGui.QLineEdit(self.upright)
+        rightInfoHub['textBoxes'][headers[i]]=QtWidgets.QLineEdit(self.upright)
         rightInfoHub['textBoxes'][headers[i]].textChanged.connect(lambda:textChange(self))
      self.upright.verticalLayoutScroll.addWidget(rightInfoHub['textBoxes'][headers[i]],i,2)
      rightInfoHub['textBoxes'][headers[i]].setFixedWidth(500)
@@ -156,8 +156,8 @@ def saveChanges(self,headers,num):
    if self.saveChanges==True:
       from addSignal import addsignal
       self.saveChanges=False
-      reply=QtGui.QMessageBox.question(self, 'Save Changes?', 'Save these changes to '+rightInfoHub['textBoxes']['name'].text()+'?', QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
-      if reply==QtGui.QMessageBox.Yes:
+      reply=QtWidgets.QMessageBox.question(self, 'Save Changes?', 'Save these changes to '+rightInfoHub['textBoxes']['name'].text()+'?', QtWidgets.QMessageBox.Yes, QtWidgets.QMessageBox.No)
+      if reply==QtWidgets.QMessageBox.Yes:
         i=1
 
         headers=getInfo.getDictionary(fileName())

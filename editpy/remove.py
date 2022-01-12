@@ -20,5 +20,5 @@ def rem(num,self):
          i+=1
       varDB2.close()
       generateButtons(self,self.searchText.text(),0)
-      print "Remove succesful: ",lines[num]
+      print("Remove succesful: ",lines[num])
 

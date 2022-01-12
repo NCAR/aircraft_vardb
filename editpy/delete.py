@@ -3,12 +3,12 @@
 import getInfo
 import remove
 from setup import fileName
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtWidgets, QtCore
 def delete(signame,self,num):
    entries=getInfo.getinfo(fileName())
    quit_messge='Are you sure you want to delete '+signame
-   reply=QtGui.QMessageBox.question(self, 'Warning: altering varDB', quit_messge, QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
-   if reply == QtGui.QMessageBox.Yes:
+   reply=QtWidgets.QMessageBox.question(self, 'Warning: altering varDB', quit_messge, QtWidgets.QMessageBox.Yes, QtGui.QMessageBox.No)
+   if reply == QtWidgets.QMessageBox.Yes:
       from addSignal import addsignal
       from radioClickEvent import lookingAt
       from radioClickEvent import clearRightInfoHub
