@@ -13,9 +13,6 @@ def vardb_global(env):
     # and libVarDB.
     env.AppendUnique(CXXFLAGS=['-fPIC'])
     env['VARDB_README_FILE'] = env.File("$INSTALL_PREFIX/README")
-    if env['PLATFORM'] == 'darwin':
-      env.Append(CPPPATH=['/opt/X11/include'])
-      env.Append(LIBPATH=['/opt/X11/lib'])
 
 env = Environment(tools=['default','prefixoptions'], GLOBAL_TOOLS=[vardb_global])
 
