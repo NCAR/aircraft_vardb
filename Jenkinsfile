@@ -6,7 +6,6 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        sh 'git submodule update --recursive'
         sh 'scons'
       }
     }
