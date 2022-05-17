@@ -4,6 +4,11 @@ pipeline {
     pollSCM('H/20 7-20 * * *')
   }
   stages {
+    stage('Checkout Scm') {
+      steps {
+        git 'eolJenkins:ncar/aircraft_vardb --recursive'
+      }
+    }
     stage('Build') {
       steps {
         sh 'scons install'
