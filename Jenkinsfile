@@ -17,8 +17,8 @@ pipeline {
     }
   }
   post {
-    success {
-      mail(to: 'cjw@ucar.edu janine@ucar.edu cdewerd@ucar.edu granger@ucar.edu taylort@ucar.edu', subject: 'aircraft_vardb Jenkinsfile build successful', body: 'aircraft_vardb Jenkinsfile build successful')
+    failure {
+      mail(to: 'cjw@ucar.edu janine@ucar.edu cdewerd@ucar.edu granger@ucar.edu taylort@ucar.edu', subject: 'aircraft_vardb Jenkinsfile build failed', body: 'aircraft_vardb Jenkinsfile build failed')
     }
   }
   options {
