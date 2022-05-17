@@ -6,7 +6,7 @@ pipeline {
   stages {
     stage('Checkout Scm') {
       steps {
-        git 'eolJenkins:ncar/aircraft_vardb --recursive'
+        git 'eolJenkins:ncar/aircraft_vardb'
       }
     }
     stage('Build') {
