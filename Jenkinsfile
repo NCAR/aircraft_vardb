@@ -6,7 +6,7 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        sh 'scons'
+        sh 'scons install'
       }
     }
   }
