@@ -18,7 +18,10 @@ pipeline {
   }
   post {
     failure {
-      mail(to: 'cjw@ucar.edu janine@ucar.edu cdewerd@ucar.edu granger@ucar.edu taylort@ucar.edu', subject: 'aircraft_vardb Jenkinsfile build failed', body: 'aircraft_vardb Jenkinsfile build failed')
+      emailext to: "cjw@ucar.edu janine@ucar.edu cdewerd@ucar.edu granger@ucar.edu taylort@ucar.edu",
+      subject: "Jenkinsfile aircraft_vardb build failed",
+      body: "See console output attached",
+      attachLog: true
     }
   }
   options {
