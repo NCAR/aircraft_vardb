@@ -46,7 +46,7 @@ void Initialize(int argc, char *argv[])
 
 
   if (pnum > 99)
-    sprintf(FileName, "%s/%d/%s/VarDB", ProjectDirectory, pnum, getAircraftName(pnum));
+    snprintf(FileName, 1024, "%s/%d/%s/VarDB", ProjectDirectory, pnum, getAircraftName(pnum));
   else
     strcpy(FileName, argv[1]);
 

@@ -190,7 +190,7 @@ void OpenNewFile_OK(Widget w, XtPointer client, XmFileSelectionBoxCallbackStruct
 /* -------------------------------------------------------------------- */
 void OpenNewFile(Widget w, XtPointer client, XtPointer call)
 {
-  sprintf(buffer, "%s/*", ProjectDirectory);
+  snprintf(buffer, 1024, "%s/*", ProjectDirectory);
   QueryFile((char *)"Enter file name to load:", buffer, (XtCallbackProc)OpenNewFile_OK);
 
 }	/* END OPENNEWFILE */
@@ -252,31 +252,31 @@ void EditVariable(Widget w, XtPointer client, XmListCallbackStruct *call)
   XmTextFieldSetString(EFtext[3], ((struct var_v2 *)VarDB)[pos].AlternateUnits);
 
   lv = ntohl(((struct var_v2 *)VarDB)[pos].voltageRange[0]);
-  sprintf(buffer, l_format, lv);
+  snprintf(buffer, 1024, l_format, lv);
   XmTextFieldSetString(EFtext[4], buffer);
 
   lv = ntohl(((struct var_v2 *)VarDB)[pos].voltageRange[1]);
-  sprintf(buffer, l_format, lv);
+  snprintf(buffer, 1024, l_format, lv);
   XmTextFieldSetString(EFtext[5], buffer);
 
   lv = ntohl(((struct var_v2 *)VarDB)[pos].defaultSampleRate);
-  sprintf(buffer, l_format, lv);
+  snprintf(buffer, 1024, l_format, lv);
   XmTextFieldSetString(EFtext[6], buffer);
 
   fl = ntohf(((struct var_v2 *)VarDB)[pos].MinLimit);
-  sprintf(buffer, f_format, fl);
+  snprintf(buffer, 1024, f_format, fl);
   XmTextFieldSetString(EFtext[7], buffer);
 
   fl = ntohf(((struct var_v2 *)VarDB)[pos].MaxLimit);
-  sprintf(buffer, f_format, fl);
+  snprintf(buffer, 1024, f_format, fl);
   XmTextFieldSetString(EFtext[8], buffer);
 
   fl = ntohf(((struct var_v2 *)VarDB)[pos].CalRange[0]);
-  sprintf(buffer, f_format, fl);
+  snprintf(buffer, 1024, f_format, fl);
   XmTextFieldSetString(EFtext[9], buffer);
 
   fl = ntohf(((struct var_v2 *)VarDB)[pos].CalRange[1]);
-  sprintf(buffer, f_format, fl);
+  snprintf(buffer, 1024, f_format, fl);
   XmTextFieldSetString(EFtext[10], buffer);
 
   if (ntohl(((struct var_v2 *)VarDB)[pos].is_analog))

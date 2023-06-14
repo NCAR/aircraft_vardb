@@ -36,8 +36,8 @@ char	*argv[];
     exit(1);
     }
 
-  sprintf(buff1, "/home/local/proj/defaults/bulletin.9", argv[1]);
-  sprintf(buff2, "/home/local/proj/%s/plot_attr", argv[1]);
+  snprintf(buff1, 1024, "/home/local/proj/defaults/bulletin.9", argv[1]);
+  snprintf(buff2, 1024, "/home/local/proj/%s/plot_attr", argv[1]);
 
   if (CreateVarDB(buff1, buff2) == ERR)
     {
@@ -46,7 +46,7 @@ char	*argv[];
     }
 
 
-  sprintf(buff1, "/home/local/proj/%s/VarDB", argv[1]);
+  snprintf(buff1, 1024, "/home/local/proj/%s/VarDB", argv[1]);
 
   if (SaveVarDB(buff1) == ERR)
     {

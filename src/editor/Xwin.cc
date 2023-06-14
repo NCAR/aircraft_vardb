@@ -128,12 +128,12 @@ Widget CreateMainWindow(Widget parent)
   for (i = 0; i < nForms; ++i)
     {
     n = 0;
-    sprintf(buffer, "EFform%d", i);
+    snprintf(buffer, 1024, "EFform%d", i);
     EFform[i] = XmCreateForm(editFieldRC, buffer, args, n);
 
     if (i < 10)
       {
-      sprintf(buffer, "EFlabel%d", i);
+      snprintf(buffer, 1024, "EFlabel%d", i);
 
       n = 0;
       XtSetArg(args[n], XmNtopAttachment, XmATTACH_FORM); n++;
@@ -163,7 +163,7 @@ Widget CreateMainWindow(Widget parent)
     XtSetArg(args[n], XmNbottomAttachment, XmATTACH_FORM); n++;
     XtSetArg(args[n], XmNleftAttachment, XmATTACH_WIDGET); n++;
     XtSetArg(args[n], XmNleftWidget, EFlabel[i]); n++;
-    sprintf(buffer, "EFtext%d", i);
+    snprintf(buffer, 1024, "EFtext%d", i);
     EFtext[i] = XmCreateTextField(EFform[i], buffer, args, n);
     XtAddCallback(EFtext[i], XmNactivateCallback,
 		(XtCallbackProc)XmProcessTraversal,
@@ -190,10 +190,10 @@ Widget CreateMainWindow(Widget parent)
     XtSetArg(args[n], XmNleftWidget, EFlabel[i]); n++;
 
 
-    sprintf(buffer, "EFtext%d", textCnt);
+    snprintf(buffer, 1024, "EFtext%d", textCnt);
     EFtext[textCnt] = XmCreateTextField(EFform[i], buffer, args, n);
     XtAddCallback(EFtext[textCnt], XmNactivateCallback,
-    		(XtCallbackProc)XmProcessTraversal,
+		(XtCallbackProc)XmProcessTraversal,
 		(XtPointer)XmTRAVERSE_NEXT_TAB_GROUP);
     XtManageChild(EFtext[textCnt]);
     ++textCnt;
@@ -206,7 +206,7 @@ Widget CreateMainWindow(Widget parent)
       XtSetArg(args[n], XmNleftAttachment, XmATTACH_WIDGET); n++;
       XtSetArg(args[n], XmNleftWidget, EFtext[textCnt-1]); n++;
 
-      sprintf(buffer, "EFtext%d", textCnt);
+      snprintf(buffer, 1024, "EFtext%d", textCnt);
       EFtext[textCnt] = XmCreateTextField(EFform[i], buffer, args, n);
       XtAddCallback(EFtext[textCnt], XmNactivateCallback,
 		(XtCallbackProc)XmProcessTraversal,

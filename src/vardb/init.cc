@@ -67,7 +67,7 @@ int InitializeVarDB(const char fileName[])
   p = getenv("PROJ_DIR");
   if (p)
   {
-    sprintf(masterFileName, "%s/Configuration/VarDB", p);
+    snprintf(masterFileName, MAXPATHLEN, "%s/Configuration/VarDB", p);
 // We are not ready for a master file.  lookup returns a master, but then
 // the index always goes into the regular not master VarDB list.  Needs work.
 //    master_VarDB = readFile(masterFileName, &master_VarDB_Hdr);
