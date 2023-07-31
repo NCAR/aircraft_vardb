@@ -2,7 +2,7 @@
 
 env = Environment(tools=['default', 'prefixoptions', 'vardb', 'netcdf', 'raf'])
 
-env.Append(CXXFLAGS=Split("-std=c++11 -Wall -g -O2 -Wno-write-strings -Wno-deprecated-register"))
+env.Append(CXXFLAGS=Split("-std=c++11 -Wall -g -O2 -Wno-write-strings"))
 env.Append(LIBS=Split("Xm Xt X11 Xext"))
 
 srcs = Split("vared.cc initv.cc Xwin.cc ccb.cc")
