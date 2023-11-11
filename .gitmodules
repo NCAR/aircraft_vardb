@@ -1,5 +1,5 @@
 [submodule "site_scons"]
-	path = site_scons
+	path = site_scons/eol_scons
 	url = ../eol_scons
 [submodule "logx"]
 	path = logx
