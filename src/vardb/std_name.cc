@@ -15,7 +15,7 @@ STATIC FNS:	none
 
 DESCRIPTION:	
 
-COPYRIGHT:	University Corporation for Atmospheric Research, 2005-06
+COPYRIGHT:	University Corporation for Atmospheric Research, 2005-24
 -------------------------------------------------------------------------
 */
 
@@ -38,8 +38,8 @@ typedef struct
   char	Name[STD_NAME_LEN];
   } STD_NAME;
 
-static int	firstTime = TRUE;
-static char	*fileName;
+static int	firstTime = true;
+static char	*fileName = 0;
 static int	nStdNames = 0;
 static STD_NAME	*StdName[MAX_STD_NAMES];
 
@@ -63,7 +63,7 @@ void SetStandardNameFileName(const char fn[])
 
   strcpy(p, "StandardNames");
 
-}	/* END SETCATEGORYFILENAME */
+}	/* END SETSTANDARDNAMEFILENAME */
 
 /* -------------------------------------------------------------------- */
 int ReadStandardNames()
@@ -71,26 +71,29 @@ int ReadStandardNames()
   char line[128], *p;
   FILE *fp;
 
+  if (fileName == 0)
+    return(ERR);
+
   if ((fp = fopen(fileName, "r")) == NULL)
-    {
+  {
     fprintf(stderr, "std_name.c: Can't open %s.\n", fileName);
     return(ERR);
-    }
+  }
 
   for (nStdNames = 0; fgets(line, 128, fp); )
-    {
+  {
     if (line[0] == '#' || strlen(line) < (size_t)5)
       continue;
 
     if (nStdNames >= MAX_STD_NAMES-1)
-      {
+    {
       fprintf(stderr, "vardb/lib/category.c: MAX_STD_NAME exceeded.\n");
       fprintf(stderr, " Ignoring extra categories and continuing.\n");
       fprintf(stderr, " Please notify a programmer of this problem.\n");
 
       fclose(fp);
       return(OK);
-      }
+    }
 
     StdName[nStdNames] = (STD_NAME *)malloc(sizeof(STD_NAME));
 
@@ -102,12 +105,12 @@ int ReadStandardNames()
     strncpy(StdName[nStdNames]->Name, p, STD_NAME_LEN);
     StdName[nStdNames]->Name[strlen(StdName[nStdNames]->Name)-1]='\0';
     ++nStdNames;
-    }
+  }
 
   fclose(fp);
   return(OK);
 
-}	/* END READCATEGORIES */
+}	/* END READSTANDARDNAMES */
 
 /* -------------------------------------------------------------------- */
 const char *VarDB_GetStandardNameName(const char vn[])
@@ -116,16 +119,16 @@ const char *VarDB_GetStandardNameName(const char vn[])
   int catNum;
 
   if (firstTime)
-    {
+  {
     if (ReadStandardNames() == ERR)
-      return((char *)ERR);
+      return("None");
 
-    firstTime = FALSE;
-    }
+    firstTime = false;
+  }
 
 
   if ((indx = VarDB_lookup(vn)) == ERR)
-    return(StdName[0]->Name);
+    return("None");
 
   if (VarDB_NcML > 0)
   {
@@ -143,7 +146,7 @@ const char *VarDB_GetStandardNameName(const char vn[])
 
   return(StdName[rc]->Name);
 
-}	/* END VARDB_GETCATEGORYNAME */
+}	/* END VARDB_GETSTANDARDNAMENAME */
 
 /* -------------------------------------------------------------------- */
 char **VarDB_GetVariablesInStandardName(int catNum)
@@ -152,12 +155,12 @@ char **VarDB_GetVariablesInStandardName(int catNum)
   char **p;
 
   if (firstTime)
-    {
+  {
     if (ReadStandardNames() == ERR)
-      return((char **)ERR);
+      return((char **)0);
 
-    firstTime = FALSE;
-    }
+    firstTime = false;
+  }
 
 
   cnt = 0;
@@ -166,12 +169,12 @@ char **VarDB_GetVariablesInStandardName(int catNum)
   for (i = 0; i < VarDB_nRecords; ++i)
     if (ntohl(((struct var_v2 *)VarDB)[i].standard_name) ==
 	(unsigned int)catNum)
-      {
+    {
       p = (char **)realloc(p, sizeof(char *) * (cnt+2));
       p[cnt] = ((struct var_v2 *)VarDB)[i].Name;
 
       ++cnt;
-      }
+    }
 
   p[cnt] = NULL;
 
@@ -185,12 +188,12 @@ int VarDB_GetStandardNameList(char *list[])
   int i;
 
   if (firstTime)
-    {
+  {
     if (ReadStandardNames() == ERR)
       return(ERR);
 
-    firstTime = FALSE;
-    }
+    firstTime = false;
+  }
 
 
   for (i = 0; i < nStdNames; ++i)
@@ -208,12 +211,12 @@ int VarDB_GetStandardNameNumber(const char categoryName[])
   int i;
 
   if (firstTime)
-    {
+  {
     if (ReadStandardNames() == ERR)
-      return(ERR);
+      return(0);
 
-    firstTime = FALSE;
-    }
+    firstTime = false;
+  }
 
 
   for (i = 0; i < nStdNames; ++i)
