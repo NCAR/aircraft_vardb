@@ -108,10 +108,10 @@ int	InitializeVarDB(const char fileName[]),
 	SaveVarDB(const char fileName[]),
 	ReadCategories(), ReadStandardNames(),
 	VarDB_GetCategory(const char vn[]),
-	VarDB_GetCategoryNumber(const char catagoryName[]),
+	VarDB_GetCategoryNumber(const char categoryName[]),
 	VarDB_GetCategoryList(char *list[]),
 	VarDB_GetStandardName(const char vn[]),
-	VarDB_GetStandardNameNumber(const char catagoryName[]),
+	VarDB_GetStandardNameNumber(const char categoryName[]),
 	VarDB_GetStandardNameList(char *list[]);
 
 void	SortVarDB(), ReleaseVarDB(), SetCategoryFileName(const char fn[]),
