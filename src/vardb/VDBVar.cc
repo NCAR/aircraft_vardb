@@ -101,7 +101,7 @@ num_atts() const
 std::string
 VDBVar::
 get_attribute(const std::string& attr_name, const std::string& dfault) const
-{ 
+{
   DOMElement* attnode = domx::findElement(_variable, attr_name);
   std::string answer = dfault;
 
@@ -125,7 +125,7 @@ template<>
 void
 VDBVar::
 set_attribute(const std::string& attr_name, const std::string& value)
-{ 
+{
   DOMDocument* doc = _variable->getOwnerDocument();
   DOMElement* attnode = domx::findElement(_variable, attr_name);
   if (!_variable->getFirstChild())

@@ -243,12 +243,12 @@ public:
   static standard_names_type
   readStandardNames(const std::string& filepath);
 
-  /** 
+  /**
    * String of spaces for indenting each XML element level.
    */
   static const std::string INDENT;
 
-  /** 
+  /**
    * Return a string with a newline and the right indentation to the given
    * level, where level 0 is no indentation.
    */
@@ -281,7 +281,7 @@ private:
   void
   parse(const std::string& file, xercesc_forward::InputSource& source);
 
-  VDBVar* 
+  VDBVar*
   search_for_var(const std::string& var, bool expanded=false);
 
   xercesc_forward::DOMDocument* _doc;
@@ -429,7 +429,7 @@ public:
 private:
 
   /**
-   * @param nod points to xerces xml tree  
+   * @param nod points to xerces xml tree
    */
   VDBVar(xercesc_forward::DOMElement* node);
 

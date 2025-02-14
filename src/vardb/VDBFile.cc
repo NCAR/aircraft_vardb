@@ -522,6 +522,7 @@ get_categories()
       names.push_back(value);
     }
   }
+  std::sort(names.begin(), names.end());
   return names;
 }
 
@@ -578,6 +579,7 @@ readCategories(const std::string& filepath)
       }
     }
   }
+  std::sort(categories.begin(), categories.end());
   return categories;
 }
 

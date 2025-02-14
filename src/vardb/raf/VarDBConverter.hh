@@ -27,7 +27,7 @@ public:
 
   std::string
   defaultProjDirPath(const std::string& filename);
-  
+
   void
   setupProjDir(const std::string& vardbarg);
 
