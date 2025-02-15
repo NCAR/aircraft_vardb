@@ -4,17 +4,13 @@ OBJECT NAME:	fix_units.c
 
 FULL NAME:	VarDB dump
 
-ENTRY POINTS:	main()
-
-STATIC FNS:	none
-
 DESCRIPTION:	Mass replacement of units with units that conform to Unidata
 		UD Units project.  This doesn't do lookups in UDunits, you
 		need to hardcode the changes into this program.
 
 COPYRIGHT:	University Corporation for Atmospheric Research, 2005
 
-COMPILE:	g++ -I/jnet/local/include fix_units.cc -L/jnet/local/lib -lVarDB -lraf -o fix_units
+COMPILE:	g++ -I../vardb/raf -I../../raf fix_units.cc -L../vardb -L../../raf -lVarDB -lraf -lnetcdf -o fix_units
 
 -------------------------------------------------------------------------
 */
@@ -44,7 +40,7 @@ int main(int argc, char *argv[])
   }
 
 
-  printf("Version %d, with %d records.\n", ntohl(VarDB_Hdr.Version),
+  printf("Version %d, with %d records.\n", ntohl(master_VarDB_Hdr.Version),
 						VarDB_nRecords);
 
   VarDB_SetUnits("CLAT", "degree_N");
