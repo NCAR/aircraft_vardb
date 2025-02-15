@@ -287,7 +287,6 @@ Widget CreateMainWindow(Widget parent)
   XtAddCallback(acceptButton, XmNactivateCallback, Accept, (XtPointer)0);
   XtManageChild(acceptButton);
 
-
   return(topLevelForm);
 
 }	/* END CREATEMAINWINDOW */

@@ -21,7 +21,7 @@ COPYRIGHT:	University Corporation for Atmospheric Research, 1993-2005
 
 
 /* -------------------------------------------------------------------- */
-int VarDB_SetUnits(const char vn[], char units[])
+int VarDB_SetUnits(const char vn[], const char units[])
 {
   int	indx;
 
@@ -34,7 +34,7 @@ int VarDB_SetUnits(const char vn[], char units[])
 }	/* END VARDB_SETUNITS */
 
 /* -------------------------------------------------------------------- */
-int VarDB_SetAlternateUnits(const char vn[], char units[])
+int VarDB_SetAlternateUnits(const char vn[], const char units[])
 {
   int	indx;
 
@@ -47,7 +47,7 @@ int VarDB_SetAlternateUnits(const char vn[], char units[])
 }	/* END VARDB_SETALTERNATEUNITS */
 
 /* -------------------------------------------------------------------- */
-int VarDB_SetTitle(const char vn[], char title[])
+int VarDB_SetTitle(const char vn[], const char title[])
 {
   int	indx;
 

@@ -131,9 +131,9 @@ bool	VarDB_isAnalog(const char vn[]);
 //	VarDB_isRangeFixed(const char vn[]),
 //	VarDB_isRangeFloating(const char vn[]);
 
-int	VarDB_SetUnits(const char vn[], char units[]),
-	VarDB_SetAlternateUnits(const char vn[], char units[]),
-	VarDB_SetTitle(const char vn[], char title[]),
+int	VarDB_SetUnits(const char vn[], const char units[]),
+	VarDB_SetAlternateUnits(const char vn[], const char units[]),
+	VarDB_SetTitle(const char vn[], const char title[]),
 	VarDB_SetIsAnalog(const char vn[], bool value),
 	VarDB_SetVoltageRangeLower(const char vn[], int32_t value),
 	VarDB_SetVoltageRangeUpper(const char vn[], int32_t value),

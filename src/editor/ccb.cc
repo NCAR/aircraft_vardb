@@ -48,9 +48,9 @@ extern long	VarDB_nRecords, VarDB_RecLength;
 
 extern "C" {
 char *strupr(char *);
-void ShowError(char msg[]), FileCancel(Widget, XtPointer, XtPointer);
-void QueryFile(char *, char *, XtCallbackProc), ExtractFileName(XmString, char **);
-void WarnUser(char msg[], XtCallbackProc, XtCallbackProc);
+void ShowError(const char msg[]), FileCancel(Widget, XtPointer, XtPointer);
+void QueryFile(const char *, const char *, XtCallbackProc), ExtractFileName(XmString, char **);
+void WarnUser(const char msg[], XtCallbackProc, XtCallbackProc);
 }
 
 /* -------------------------------------------------------------------- */
