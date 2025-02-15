@@ -25,6 +25,9 @@ COPYRIGHT:	University Corporation for Atmospheric Research, 1993-2011
 #include <cstdlib>
 #include <sys/types.h>
 
+// Fix deprecated 'register' keyword used in Motif.
+#define register
+
 #include <Xm/List.h>
 #include <Xm/PushB.h>
 #include <Xm/RowColumn.h>

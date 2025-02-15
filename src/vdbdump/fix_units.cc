@@ -19,8 +19,8 @@ COMPILE:	g++ -I/jnet/local/include fix_units.cc -L/jnet/local/lib -lVarDB -lraf 
 -------------------------------------------------------------------------
 */
 
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 #include <sys/types.h>
 
 #include <vardb.h>
@@ -29,19 +29,19 @@ COMPILE:	g++ -I/jnet/local/include fix_units.cc -L/jnet/local/lib -lVarDB -lraf 
 extern long	VarDB_nRecords;
 
 /* -------------------------------------------------------------------- */
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
   if (argc < 2)
-    {
+  {
     fprintf(stderr, "Usage: vdbdump [-a] [proj_num | VarDB_filename]\n");
     return(1);
-    }
+  }
 
   if (InitializeVarDB(argv[1]) == ERR)
-    {
+  {
     fprintf(stderr, "vdbdump: Initialize failure.\n");
     return(1);
-    }
+  }
 
 
   printf("Version %d, with %d records.\n", ntohl(VarDB_Hdr.Version),
@@ -233,13 +233,9 @@ main(int argc, char *argv[])
 */
   }
 
-
   SaveVarDB(argv[1]);
-
   ReleaseVarDB();
 
   return(0);
 
-}	/* END MAIN */
-
-/* END FIX_UNITS.CC */
+}

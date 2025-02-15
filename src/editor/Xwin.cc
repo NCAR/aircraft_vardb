@@ -14,7 +14,10 @@ COPYRIGHT:	University Corporation for Atmospheric Research, 1993-2011
 -------------------------------------------------------------------------
 */
 
-#include <stdio.h>
+#include <cstdio>
+
+// Fix deprecated 'register' keyword used in Motif.
+#define register
 
 #include <Xm/CascadeB.h>
 #include <Xm/Form.h>

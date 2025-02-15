@@ -6,20 +6,14 @@ FULL NAME:	Variable DataBase Set functions
 
 ENTRY POINTS:	VarDB_Set*()
 
-STATIC FNS:	none
-
 DESCRIPTION:	
-
-INPUT:		Variable Name, value to set
-
-OUTPUT:		OK/ERR
 
 COPYRIGHT:	University Corporation for Atmospheric Research, 1993-2005
 -------------------------------------------------------------------------
 */
 
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 #include <sys/types.h>
 
 #include "raf/vardb.h"

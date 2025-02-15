@@ -4,16 +4,8 @@ OBJECT NAME:	xlate.c
 
 FULL NAME:	Translate to VarDB
 
-ENTRY POINTS:	main()
-
-STATIC FNS:	none
-
 DESCRIPTION:	This program converts an old bulletin.9 and plot_attr into
 		a new VarDB.
-
-INPUT:		none
-
-OUTPUT:		File called "VarDB"
 
 REFERENCES:	libVarDB.a
 

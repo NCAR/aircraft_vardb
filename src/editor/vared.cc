@@ -1,18 +1,17 @@
 /*
 -------------------------------------------------------------------------
-OBJECT NAME:	setup.c
+OBJECT NAME:	vared.c
 
 FULL NAME:	
-
-ENTRY POINTS:	main()
-
-STATIC FNS:	none
 
 DESCRIPTION:	
 
 COPYRIGHT:	University Corporation for Atmospheric Research, 1993-2005
 -------------------------------------------------------------------------
 */
+
+// Fix deprecated 'register' keyword used in Motif.
+#define register
 
 #include <Xm/Xm.h>
 
@@ -41,7 +40,7 @@ int main(int argc, char **argv)
 				fallback_resources, NULL, 0);
 
   n = 0;
-  Shell000 = XtCreatePopupShell("topLevelShell", 
+  Shell000 = XtCreatePopupShell("topLevelShell",
 				topLevelShellWidgetClass, AppShell, args, n);
 
   MainWindow = CreateMainWindow(Shell000);

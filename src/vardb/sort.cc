@@ -6,20 +6,14 @@ FULL NAME:	Initialize
 
 ENTRY POINTS:	SortVarDB()
 
-STATIC FNS:	none
-
 DESCRIPTION:	
-
-INPUT:		FileName
-
-OUTPUT:		OK/ERR
 
 COPYRIGHT:	University Corporation for Atmospheric Research, 1993
 -------------------------------------------------------------------------
 */
 
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 #include "raf/vardb.h"
 
 extern long	VarDB_nRecords;
