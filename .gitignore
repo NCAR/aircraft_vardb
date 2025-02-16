@@ -1,9 +1,5 @@
 # ignore objects and archives, anywhere in the tree.
 *.[oa]
-vared
-vdb2ncml
-vdb2xml
-vdbdump
 .sconf_temp
 .sconsign.dblite
 config.log
