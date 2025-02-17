@@ -80,6 +80,7 @@ main(int argc, char *argv[])
         substring_length.push_back(50);
         attribute_names.push_back("long_name");
         user_format_specified = true;
+        break;
       case 'h':
         print_usage();
       default:
