@@ -221,11 +221,11 @@ static bool performCorrections(void *varDB)
   {
     struct var_v2 *p = &((struct var_v2 *)varDB)[i];
 
-    if (strcmp(p->Units, "degC") == 0)
+    if (strcmp(p->Units, "deg_C") == 0 || strcmp(p->Units, "Deg_C") == 0)
     {
       modified = true;
-      strcpy(p->Units, "deg_C");
-      printf("%s - degC changed to deg_C\n", p->Name);
+      strcpy(p->Units, "degC");
+      printf("%s - deg_C changed to degC, per SI units\n", p->Name);
     }
 
     if (strcmp(p->Units, "mbar") == 0)
@@ -249,7 +249,7 @@ static bool performCorrections(void *varDB)
   struct var_v2 newVar;
   memset(&newVar, 0, sizeof(newVar));
   strcpy(newVar.Name, "RTX");
-  strcpy(newVar.Units, "deg_C");
+  strcpy(newVar.Units, "degC");
   strcpy(newVar.Title, "Recovery Temperature, Reference");
   newVar.is_analog = false;
   newVar.Category = 6;
