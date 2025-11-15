@@ -45,14 +45,15 @@ int main(int argc, char *argv[])
 
   for (i = 0; i < VarDB_nRecords; ++i)
   {
+/*  Done, don't do again, but here for reference.
     // Move old Aerosol to new Aerosol
     if (ntohl(((struct var_v2 *)VarDB)[i].Category) == 13)
       VarDB_SetCategory(((struct var_v2 *)VarDB)[i].Name, 5);
+*/
 
     // NavAttitide
     if (strstr(((struct var_v2 *)VarDB)[i].Name, "PITCH") ||
         strstr(((struct var_v2 *)VarDB)[i].Name, "ROLL") ||
-        strstr(((struct var_v2 *)VarDB)[i].Name, "DIFR") ||
         strcmp(((struct var_v2 *)VarDB)[i].Name, "DRFTA") == 0 ||
         strncmp(((struct var_v2 *)VarDB)[i].Name, "BL", 2) == 0 ||
         strncmp(((struct var_v2 *)VarDB)[i].Name, "AK", 2) == 0 ||
@@ -71,6 +72,15 @@ int main(int argc, char *argv[])
         strncmp(((struct var_v2 *)VarDB)[i].Name, "PLWCC", 5) == 0 ||
         strcmp(((struct var_v2 *)VarDB)[i].Name, "RICE") == 0)
       VarDB_SetCategory(((struct var_v2 *)VarDB)[i].Name, 8);
+
+    // Aerosol
+    if (strcmp(((struct var_v2 *)VarDB)[i].Name, "CONCN") == 0 ||
+        strcmp(((struct var_v2 *)VarDB)[i].Name, "XUFCN") == 0 ||
+      VarDB_SetCategory(((struct var_v2 *)VarDB)[i].Name, 5);
+
+    // Radiation
+    if (strncmp(((struct var_v2 *)VarDB)[i].Name, "SOL", 3) == 0)
+      VarDB_SetCategory(((struct var_v2 *)VarDB)[i].Name, 11);
 
     // NavPosition
     if (strncmp(((struct var_v2 *)VarDB)[i].Name, "ALT", 3) == 0)
@@ -96,6 +106,7 @@ int main(int argc, char *argv[])
     // Raw uncorr
     if (strcmp(((struct var_v2 *)VarDB)[i].Name, "XPSFD") == 0 ||
         strcmp(((struct var_v2 *)VarDB)[i].Name, "PSFRD") == 0 ||
+        strstr(((struct var_v2 *)VarDB)[i].Name, "DIFR") ||
         strcmp(((struct var_v2 *)VarDB)[i].Name, "CORAW") == 0 ||
         strcmp(((struct var_v2 *)VarDB)[i].Name, "NO") == 0 ||
         strcmp(((struct var_v2 *)VarDB)[i].Name, "FO3") == 0 ||
@@ -116,7 +127,6 @@ int main(int argc, char *argv[])
         strncmp(((struct var_v2 *)VarDB)[i].Name, "H2D", 3) == 0 ||
         strncmp(((struct var_v2 *)VarDB)[i].Name, "THIM", 4) == 0 ||
         strncmp(((struct var_v2 *)VarDB)[i].Name, "TCAB", 4) == 0 ||
-        strncmp(((struct var_v2 *)VarDB)[i].Name, "FCN", 3) == 0 ||
         strncmp(((struct var_v2 *)VarDB)[i].Name, "MED", 3) == 0 ||
         strncmp(((struct var_v2 *)VarDB)[i].Name, "PER", 3) == 0 ||
         strncmp(((struct var_v2 *)VarDB)[i].Name, "SDW", 3) == 0 ||
@@ -127,9 +137,13 @@ int main(int argc, char *argv[])
         strncmp(((struct var_v2 *)VarDB)[i].Name, "XCELL", 5) == 0 ||
         strncmp(((struct var_v2 *)VarDB)[i].Name, "INLET", 5) == 0 ||
         strcmp(((struct var_v2 *)VarDB)[i].Name, "AO2STAT") == 0 ||
+        strcmp(((struct var_v2 *)VarDB)[i].Name, "FCNC") == 0 ||
+        strcmp(((struct var_v2 *)VarDB)[i].Name, "PCN") == 0 ||
+        strcmp(((struct var_v2 *)VarDB)[i].Name, "XICNC") == 0 ||
         strcmp(((struct var_v2 *)VarDB)[i].Name, "NSYS") == 0 ||
         strcmp(((struct var_v2 *)VarDB)[i].Name, "COZRO") == 0 ||
         strcmp(((struct var_v2 *)VarDB)[i].Name, "TASFLG") == 0 ||
+        strcmp(((struct var_v2 *)VarDB)[i].Name, "CMODE") == 0 ||
         strcmp(((struct var_v2 *)VarDB)[i].Name, "DPB") == 0 ||
         strcmp(((struct var_v2 *)VarDB)[i].Name, "DPT") == 0 ||
         strcmp(((struct var_v2 *)VarDB)[i].Name, "DPL") == 0 ||
