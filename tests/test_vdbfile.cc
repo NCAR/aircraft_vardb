@@ -198,6 +198,8 @@ TEST (VDBFileTest, ReportErrors)
 {
   VDBFile vdb;
 
+  ELOG << "expecting validation error message: "
+          "no declaration found for element 'unit'";
   vdb.load(brokenxml);
   EXPECT_FALSE(vdb.is_valid());
 }
@@ -368,11 +370,19 @@ TEST (VDBFileTest, SetCategories)
   vdb.close();
   vdb.load(out.str());
   ASSERT_TRUE(vdb.is_valid());
+  // categories now returned sorted, so test that
   VDBFile::categories_type newcats = vdb.get_categories();
   ASSERT_EQ(newcats.size(), newnames.size());
+  std::vector<std::string> sortednames {
+    "Aircraft State",
+    "Atmos. State",
+    "Chemistry",
+    "Housekeeping",
+    "Radiation"
+  };
   for (unsigned int i = 0; i < newcats.size(); ++i)
   {
-    EXPECT_EQ(newcats[i], newnames[i]) 
+    EXPECT_EQ(newcats[i], sortednames[i])
       << " compare categories at index=" << i;
   }
   EXPECT_EQ(newcats[0], oldnames[0]);
@@ -443,12 +453,24 @@ TEST (VDBFileTest, ReadCategories)
   // Test reading category names from a Categories text file.
   VDBFile::categories_type categories;
   categories = VDBFile::readCategories("Categories");
-  ASSERT_EQ(categories.size(), 12);
-  EXPECT_EQ(categories[0], "Position");
-  EXPECT_EQ(categories[5], "Uncorr'd Raw");
-  EXPECT_EQ(categories[6], "Wind");
-  EXPECT_EQ(categories[8], "Housekeeping");
-  EXPECT_EQ(categories[11], "Non-Standard");
+
+  // sorted categories without None
+  std::vector<std::string> xcats = {
+    "Aircraft State",
+    "Atmos. State",
+    "Chemistry",
+    "Housekeeping",
+    "Liquid Water",
+    "Non-Standard",
+    "PMS Probe",
+    "Position",
+    "Radiation",
+    "Thermodynamic",
+    "Uncorr'd Raw",
+    "Wind",
+  };
+
+  ASSERT_EQ(categories, xcats);
 }
 
 TEST (VDBFileTest, ReadStandardNames)
@@ -456,10 +478,47 @@ TEST (VDBFileTest, ReadStandardNames)
   // Test reading category names from a Categories text file.
   VDBFile::standard_names_type snames;
   snames = VDBFile::readStandardNames("StandardNames");
-  ASSERT_EQ(snames.size(), 36);
-  EXPECT_EQ(snames[0], "altitude");
-  EXPECT_EQ(snames[31], "atmosphere_number_content_of_aerosol_particles");
-  EXPECT_EQ(snames[35], "mole_fraction_of_ozone_in_air");
+
+  std::vector<std::string> xnames = {
+    "air_potential_temperature",
+    "air_pressure",
+    "air_pressure_at_sea_level",
+    "air_temperature",
+    "altitude",
+    "atmosphere_cloud_liquid_water_content",
+    "atmosphere_number_content_of_aerosol_particles",
+    "dew_point_temperature",
+    "eastward_wind",
+    "equivelent_potential_temperature",
+    "geopotential_height",
+    "height",
+    "humidity_mixing_ratio",
+    "latitude",
+    "longitude",
+    "mole_fraction_of_carbon_dioxide_in_air",
+    "mole_fraction_of_carbon_monoxide_in_air",
+    "mole_fraction_of_methane_in_air",
+    "mole_fraction_of_ozone_in_air",
+    "northward_wind",
+    "platform_course",
+    "platform_orientation",
+    "platform_pitch_angle",
+    "platform_roll_angle",
+    "platform_speed_wrt_air",
+    "platform_speed_wrt_ground",
+    "relative_humidity",
+    "solar_azimuth_angle",
+    "solar_elevation_angle",
+    "solar_zenith_angle",
+    "surface_air_pressure",
+    "upward_air_velocity",
+    "virtual_temperature",
+    "water_vapor_pressure",
+    "wind_from_direction",
+    "wind_speed"
+  };
+
+  ASSERT_EQ(snames, xnames);
 }
 
 
