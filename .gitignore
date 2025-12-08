@@ -5,3 +5,4 @@
 config.log
 __pycache__
 /tests/*-tests-contrast_vardb.xml
+apidocs

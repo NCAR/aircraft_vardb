@@ -1,5 +1,7 @@
 # -*- python -*-
 
+from SCons.Script import Environment, Split, Export
+
 env = Environment(tools=['default', 'prefixoptions', 'text2cc',
                          'domx', 'boost_regex'])
 
@@ -7,7 +9,7 @@ env.Append(CXXFLAGS=Split("-std=c++11 -Wall -g -O2"))
 
 headers = Split("raf/vardb.h raf/vardb.hh raf/VarDBConverter.hh")
 srcs = Split("""
-init.cc get.cc set.cc save.cc merge.cc sort.cc category.cc std_name.cc 
+init.cc get.cc set.cc save.cc merge.cc sort.cc category.cc std_name.cc
 VDBFile.cc VDBVar.cc VDBDictionary.cc VarDBConverter.cc
 """)
 
@@ -17,24 +19,26 @@ libvardb = env.Library('VarDB', srcs)
 env.Default(libvardb)
 
 # No longer install library and includes.  cjw 1/2021
-#env.Install(env['INSTALL_PREFIX']+'/lib', libvardb)
-#env.Install(env['INSTALL_PREFIX']+'/include/raf', headers)
-#env.Install('#/../man/man3', "vardb.3")
+# env.Install(env['INSTALL_PREFIX']+'/lib', libvardb)
+# env.Install(env['INSTALL_PREFIX']+'/include/raf', headers)
+# env.Install('#/../man/man3', "vardb.3")
 
 libdir = env.Dir('.')
 
-env['DOXYFILE_DICT'].update({'PROJECT_NAME' : 'VarDB Library'})
+env['DOXYFILE_DICT'].update({'PROJECT_NAME': 'VarDB Library'})
 doxyfile = env.Doxyfile(target="#/apidocs/vardb/Doxyfile",
-                        source=srcs+headers+[env['VARDB_README_FILE']])
+                        source=srcs+headers+[env.File('../../README')])
 tdoxygen = env.Doxygen(source=doxyfile)
 
 env.Apidocs(srcs+headers)
+
 
 def vardb(env):
     env.AppendLibrary('VarDB')
     env.Append(CPPPATH=libdir)
     env.Require('domx')
     env.Require('boost_regex')
+
 
 def vardbconverter(env):
     """
@@ -43,6 +47,7 @@ def vardbconverter(env):
     """
     env.Require('raf')
     env.Require('netcdf')
+
 
 Export('vardb')
 Export('vardbconverter')
