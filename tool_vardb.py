@@ -1,10 +1,14 @@
 # -*- python -*-
 
+from SCons.Script import Environment, SConscript, GetOption, AddOption
+
+
 AddOption('--python',
-    dest='python',
-    action='store_true',
-    default=False,
-    help='compile python dir')
+          dest='python',
+          action='store_true',
+          default=False,
+          help='compile python dir')
+
 
 def vardb_global(env):
     "Copy prefix settings into the prefixoptions."
@@ -12,9 +16,10 @@ def vardb_global(env):
     # libraries it links against must be relocatable, eg liblogx, libdomx,
     # and libVarDB.
     env.AppendUnique(CXXFLAGS=['-fPIC'])
-    env['VARDB_README_FILE'] = env.File("$INSTALL_PREFIX/README")
 
-env = Environment(tools=['default','prefixoptions'], GLOBAL_TOOLS=[vardb_global])
+
+env = Environment(tools=['default', 'prefixoptions'],
+                  GLOBAL_TOOLS=[vardb_global])
 
 SConscript('src/vardb/SConscript')
 SConscript('src/vdbdump/SConscript')
