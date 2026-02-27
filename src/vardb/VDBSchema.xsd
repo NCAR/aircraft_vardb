@@ -23,6 +23,8 @@ http://www.w3schools.com/schema/default.asp
       <xs:element name="dependencies" type="xs:string" minOccurs="0"/>
       <xs:element name="standard_name" type="xs:string" minOccurs="0"/>
       <xs:element name="reference" type="xs:string" minOccurs="0"/>
+      <xs:element name="alternate_units" type="xs:string" minOccurs="0"/>
+      <xs:element name="cal_range" type="xs:string" minOccurs="0"/>
       <xs:element name="test" type="xs:string" minOccurs="0"/>
     </xs:all>
     <xs:attribute name="name" type="xs:string"/>

@@ -8,7 +8,7 @@ ENTRY POINTS:	Initialize()
 
 STATIC FNS:	none
 
-DESCRIPTION:	
+DESCRIPTION:
 
 COPYRIGHT:	University Corporation for Atmospheric Research, 1993-2006
 -------------------------------------------------------------------------
@@ -16,6 +16,8 @@ COPYRIGHT:	University Corporation for Atmospheric Research, 1993-2006
 
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
+#include <sys/stat.h>
 
 // Fix deprecated 'register' keyword used in Motif.
 #define register
@@ -23,16 +25,20 @@ COPYRIGHT:	University Corporation for Atmospheric Research, 1993-2006
 #include <Xm/List.h>
 
 #include "define.h"
-#include <raf/vardb.h>
 
-char	buffer[1024], FileName[1024], *catList[128], *ProjectDirectory,
-	*stdNameList[512];
+char	buffer[1024], FileName[1024], *ProjectDirectory;
 
 extern "C" {
 void ShowError(char msg[]);
 void WarnUser(char msg[], void (*okCB)(Widget, XtPointer, XtPointer), void (*cancelCB)(Widget, XtPointer, XtPointer));
 
 const char * getAircraftName(int num);
+}
+
+static bool fileExists(const char *path)
+{
+  struct stat st;
+  return (stat(path, &st) == 0);
 }
 
 /* -------------------------------------------------------------------- */
@@ -50,12 +56,18 @@ void Initialize(int argc, char *argv[])
 
 
   if (pnum > 99)
-    snprintf(FileName, 1024, "%s/%d/%s/VarDB", ProjectDirectory, pnum, getAircraftName(pnum));
+    {
+    /* Try vardb.xml first, fall back to binary VarDB. */
+    snprintf(FileName, 1024, "%s/%d/%s/vardb.xml",
+      ProjectDirectory, pnum, getAircraftName(pnum));
+
+    if (!fileExists(FileName))
+      snprintf(FileName, 1024, "%s/%d/%s/VarDB",
+        ProjectDirectory, pnum, getAircraftName(pnum));
+    }
   else
     strcpy(FileName, argv[1]);
 
-  catList[0] = NULL;
-  stdNameList[0] = NULL;
   OpenNewFile_OK(NULL, NULL, NULL);
 
 }	/* END INITIALIZE */

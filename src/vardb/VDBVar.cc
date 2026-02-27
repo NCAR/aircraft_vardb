@@ -33,6 +33,8 @@ const std::string VDBVar::DERIVE = "derive";
 const std::string VDBVar::DEPENDENCIES = "dependencies";
 const std::string VDBVar::STANDARD_NAME = "standard_name";
 const std::string VDBVar::REFERENCE = "reference";
+const std::string VDBVar::ALTERNATE_UNITS = "alternate_units";
+const std::string VDBVar::CAL_RANGE = "cal_range";
 
 
 VDBVar::

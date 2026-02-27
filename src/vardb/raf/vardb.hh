@@ -182,6 +182,14 @@ public:
   add_var(const std::string& vname);
 
   /**
+   * Remove a variable from this document by name.  The variable's DOM
+   * element is removed from the catalog and its VDBVar instance is deleted.
+   * Returns true if the variable was found and removed, false otherwise.
+   **/
+  bool
+  remove_var(const std::string& vname);
+
+  /**
    * @param index Index position in varDB, first position is 0.
    * @returns VDBVar class pointer
    */
@@ -363,6 +371,8 @@ public:
   static const std::string DEPENDENCIES;
   static const std::string STANDARD_NAME;
   static const std::string REFERENCE;
+  static const std::string ALTERNATE_UNITS;
+  static const std::string CAL_RANGE;
 
   /**
    * Return value of variable attribute named @p attr_name, or else return

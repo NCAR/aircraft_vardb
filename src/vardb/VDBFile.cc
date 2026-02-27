@@ -444,6 +444,46 @@ add_var(const std::string& vname)
 }
 
 
+bool
+VDBFile::
+remove_var(const std::string& vname)
+{
+  VDBVar* var = get_var(vname);
+  if (!var)
+  {
+    return false;
+  }
+
+  DOMElement* root = _doc->getDocumentElement();
+  DOMElement* catalog = domx::findElement(root, "variableCatalog");
+
+  // Remove the variable's DOM element from the catalog.
+  DOMNode* ve = var->_variable;
+
+  // Remove preceding whitespace/indent text node if present.
+  DOMNode* prev = ve->getPreviousSibling();
+  if (prev && prev->getNodeType() == DOMNode::TEXT_NODE)
+  {
+    catalog->removeChild(prev);
+  }
+
+  catalog->removeChild(ve);
+
+  // Remove from the _variables vector and delete the VDBVar.
+  std::vector<VDBVar*>::iterator it;
+  for (it = _variables.begin(); it != _variables.end(); ++it)
+  {
+    if (*it == var)
+    {
+      _variables.erase(it);
+      break;
+    }
+  }
+  delete var;
+  return true;
+}
+
+
 VDBDictionary*
 VDBFile::
 get_dictionary()

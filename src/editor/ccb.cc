@@ -15,7 +15,7 @@ ENTRY POINTS:	Quit()
 
 STATIC FNS:	none
 
-DESCRIPTION:	
+DESCRIPTION:
 
 COPYRIGHT:	University Corporation for Atmospheric Research, 1993-2011
 -------------------------------------------------------------------------
@@ -23,7 +23,11 @@ COPYRIGHT:	University Corporation for Atmospheric Research, 1993-2011
 
 #include <cstdio>
 #include <cstdlib>
-#include <sys/types.h>
+#include <cstring>
+#include <string>
+#include <vector>
+#include <sstream>
+#include <algorithm>
 
 // Fix deprecated 'register' keyword used in Motif.
 #define register
@@ -35,16 +39,21 @@ COPYRIGHT:	University Corporation for Atmospheric Research, 1993-2011
 #include <Xm/ToggleB.h>
 
 #include "define.h"
-#include <raf/portable.h>
-#include <raf/vardb.h>
+#include <raf/vardb.hh>
+#include <raf/VarDBConverter.hh>
 
 static int	ChangesMade = FALSE, currentCategory = 0, currentStdName = 0;
 
+static VDBFile vdbFile;
+static VarDBConverter vdbConverter;
+static std::vector<VDBVar*> sortedVars;
+static std::vector<std::string> categoryNames;
+static std::vector<std::string> stdNames;
+static std::string xmlSavePath;
+
 extern Widget	catXx, stdNameXx, catMenu, stdNameMenu, list, referenceButton,
 		EFtext[], analogButton;
-extern char	buffer[], FileName[], *catList[], *ProjectDirectory,
-		*stdNameList[];
-extern long	VarDB_nRecords, VarDB_RecLength;
+extern char	buffer[], FileName[], *ProjectDirectory;
 
 extern "C" {
 char *strupr(char *);
@@ -52,6 +61,55 @@ void ShowError(const char msg[]), FileCancel(Widget, XtPointer, XtPointer);
 void QueryFile(const char *, const char *, XtCallbackProc), ExtractFileName(XmString, char **);
 void WarnUser(const char msg[], XtCallbackProc, XtCallbackProc);
 }
+
+
+/* Helper: rebuild sorted variable list from VDBFile */
+static void rebuildSortedVars()
+{
+  sortedVars.clear();
+  for (int i = 0; i < vdbFile.num_vars(); ++i)
+    sortedVars.push_back(vdbFile.get_var(i));
+
+  std::sort(sortedVars.begin(), sortedVars.end(),
+    [](VDBVar* a, VDBVar* b) { return a->name() < b->name(); });
+}
+
+
+/* Helper: refresh the Motif list widget from sortedVars */
+static void refreshList()
+{
+  XmListDeleteAllItems(list);
+  for (size_t i = 0; i < sortedVars.size(); ++i)
+  {
+    XmString name = XmStringCreateLocalized(
+      const_cast<char*>(sortedVars[i]->name().c_str()));
+    XmListAddItem(list, name, 0);
+    XmStringFree(name);
+  }
+}
+
+
+/* Helper: parse "lower upper" space-separated string into two values */
+static void parsePair(const std::string& str, std::string& lo, std::string& hi)
+{
+  lo.clear();
+  hi.clear();
+  std::istringstream iss(str);
+  iss >> lo >> hi;
+}
+
+
+/* Helper: find index of name in vector, return 0 if not found */
+static int findIndex(const std::vector<std::string>& vec, const std::string& name)
+{
+  for (size_t i = 0; i < vec.size(); ++i)
+  {
+    if (vec[i] == name)
+      return (int)i;
+  }
+  return 0;
+}
+
 
 /* -------------------------------------------------------------------- */
 void Quit(Widget w, XtPointer client, XtPointer call)
@@ -73,14 +131,19 @@ void SetCategory(Widget w, XtPointer client, XtPointer call)
   XmString	name;
 
   currentCategory = (long)client;
-  if (currentCategory < 0 || currentCategory > 100) currentCategory = 0;
+  if (currentCategory < 0 || currentCategory >= (int)categoryNames.size())
+    currentCategory = 0;
 
   if (!w)	/* If this is being called from EditVariable()	*/
     {
-    name = XmStringCreateLocalized(catList[currentCategory]);
-    XtSetArg(args[0], XmNlabelString, name);
-    XtSetValues(XmOptionButtonGadget(catXx), args, 1);
-    XmStringFree(name);
+    if (!categoryNames.empty())
+      {
+      name = XmStringCreateLocalized(
+        const_cast<char*>(categoryNames[currentCategory].c_str()));
+      XtSetArg(args[0], XmNlabelString, name);
+      XtSetValues(XmOptionButtonGadget(catXx), args, 1);
+      XmStringFree(name);
+      }
     }
 
 }	/* END SETCATEGORY */
@@ -92,17 +155,22 @@ void SetStandardName(Widget w, XtPointer client, XtPointer call)
   XmString	name;
 
   currentStdName = (long)client;
-  if (currentStdName < 0 || currentStdName > 100) currentStdName = 0;
+  if (currentStdName < 0 || currentStdName >= (int)stdNames.size())
+    currentStdName = 0;
 
   if (!w)	/* If this is being called from EditVariable()	*/
     {
-    name = XmStringCreateLocalized(stdNameList[currentStdName]);
-    XtSetArg(args[0], XmNlabelString, name);
-    XtSetValues(XmOptionButtonGadget(stdNameXx), args, 1);
-    XmStringFree(name);
+    if (!stdNames.empty())
+      {
+      name = XmStringCreateLocalized(
+        const_cast<char*>(stdNames[currentStdName].c_str()));
+      XtSetArg(args[0], XmNlabelString, name);
+      XtSetValues(XmOptionButtonGadget(stdNameXx), args, 1);
+      XmStringFree(name);
+      }
     }
 
-}	/* END SETCATEGORY */
+}	/* END SETSTANDARDNAME */
 
 /* -------------------------------------------------------------------- */
 void OpenNewFile_OK(Widget w, XtPointer client, XmFileSelectionBoxCallbackStruct *call)
@@ -112,7 +180,10 @@ void OpenNewFile_OK(Widget w, XtPointer client, XmFileSelectionBoxCallbackStruct
   Arg		args[8];
   XmString	name;
 
-  static Widget	b[64];
+  static Widget	catButtons[128];
+  static Widget	stdNameButtons[512];
+  static int	nCatButtons = 0;
+  static int	nStdNameButtons = 0;
 
 
   if (w)
@@ -124,65 +195,92 @@ void OpenNewFile_OK(Widget w, XtPointer client, XmFileSelectionBoxCallbackStruct
     }
 
 
-  /* Init new VarDB and generate list items.
+  /* Open the VarDB file (XML or binary with auto-conversion).
    */
-  if (InitializeVarDB(FileName) == ERR)
+  vdbConverter.open(&vdbFile, FileName);
+
+  if (!vdbFile.is_valid())
     {
-    fprintf(stderr, "Can't initialize variable database %s.", FileName);
+    fprintf(stderr, "Can't initialize variable database %s.\n", FileName);
     exit(1);
     }
 
-  SortVarDB();
+  /* Determine save path: use .xml extension. */
+  std::string path(FileName);
+  if (path.length() >= 4 && path.substr(path.length() - 4) == ".xml")
+    xmlSavePath = path;
+  else
+    xmlSavePath = vdbConverter.defaultOutputPath();
 
-  for (i = 0; i < VarDB_nRecords; ++i)
-    {
-    name = XmStringCreateLocalized(((struct var_v2 *)VarDB)[i].Name);
-    XmListAddItem(list, name, 0);
-    XmStringFree(name);
-    }
+  /* Build sorted variable list and populate Motif list widget. */
+  rebuildSortedVars();
+  refreshList();
 
 
-  /* Remove old categories, and new ones.
+  /* Remove old category buttons and build new ones from XML.
    */
-  for (i = 0; catList[i]; ++i)
+  for (i = 0; i < nCatButtons; ++i)
     {
-    XtUnmanageChild(b[i]);
-    XtDestroyWidget(b[i]);
+    XtUnmanageChild(catButtons[i]);
+    XtDestroyWidget(catButtons[i]);
     }
 
-  ReadCategories();
-  VarDB_GetCategoryList(catList);
-
-  for (i = 0; catList[i]; ++i)
+  categoryNames = vdbFile.get_categories();
+  /* Ensure "None" is at the front as the default. */
+  if (categoryNames.empty() ||
+      categoryNames[0] != "None")
     {
-    name = XmStringCreateLocalized(catList[i]);
+    categoryNames.insert(categoryNames.begin(), "None");
+    }
+
+  for (i = 0; i < (int)categoryNames.size(); ++i)
+    {
+    name = XmStringCreateLocalized(
+      const_cast<char*>(categoryNames[i].c_str()));
 
     n = 0;
     XtSetArg(args[n], XmNlabelString, name); ++n;
-    b[i] = XmCreatePushButton(catMenu, (char *)"opMenB", args, n);
-    XtAddCallback(b[i], XmNactivateCallback, SetCategory, (XtPointer)i);
+    catButtons[i] = XmCreatePushButton(catMenu, (char *)"opMenB", args, n);
+    XtAddCallback(catButtons[i], XmNactivateCallback, SetCategory, (XtPointer)(long)i);
 
     XmStringFree(name);
     }
 
-  XtManageChildren(b, i);
+  nCatButtons = i;
+  XtManageChildren(catButtons, nCatButtons);
 
-  ReadStandardNames();
-  VarDB_GetStandardNameList(stdNameList);
 
-  for (i = 0; stdNameList[i]; ++i)
+  /* Remove old standard name buttons and build new ones from XML.
+   */
+  for (i = 0; i < nStdNameButtons; ++i)
     {
-    name = XmStringCreateLocalized(stdNameList[i]);
+    XtUnmanageChild(stdNameButtons[i]);
+    XtDestroyWidget(stdNameButtons[i]);
+    }
+
+  stdNames = vdbFile.get_standard_names();
+  /* Ensure "None" is at the front as the default. */
+  if (stdNames.empty() ||
+      stdNames[0] != "None")
+    {
+    stdNames.insert(stdNames.begin(), "None");
+    }
+
+  for (i = 0; i < (int)stdNames.size(); ++i)
+    {
+    name = XmStringCreateLocalized(
+      const_cast<char*>(stdNames[i].c_str()));
 
     n = 0;
     XtSetArg(args[n], XmNlabelString, name); ++n;
-    b[i] = XmCreatePushButton(stdNameMenu, (char *)"opMenB", args, n);
-    XtAddCallback(b[i], XmNactivateCallback, SetStandardName, (XtPointer)i);
+    stdNameButtons[i] = XmCreatePushButton(stdNameMenu, (char *)"opMenB", args, n);
+    XtAddCallback(stdNameButtons[i], XmNactivateCallback, SetStandardName, (XtPointer)(long)i);
 
     XmStringFree(name);
     }
 
-  XtManageChildren(b, i);
+  nStdNameButtons = i;
+  XtManageChildren(stdNameButtons, nStdNameButtons);
 
   ChangesMade = FALSE;
   currentCategory = 0;
@@ -206,17 +304,24 @@ void SaveFileAs_OK(Widget w, XtPointer client, XmFileSelectionBoxCallbackStruct 
   ExtractFileName(call->value, &file);
   FileCancel((Widget)NULL, (XtPointer)NULL, (XtPointer)NULL);
 
-  if (SaveVarDB(file) == ERR)
-    ShowError((char *)"Error trying to save, aborted.");
-  else
+  try
+    {
+    vdbFile.save(std::string(file));
+    xmlSavePath = file;
     ChangesMade = FALSE;
+    }
+  catch (...)
+    {
+    ShowError((char *)"Error trying to save, aborted.");
+    }
 
 }	/* END SAVEFILEAS_OK */
 
 /* -------------------------------------------------------------------- */
 void SaveFileAs(Widget w, XtPointer client, XtPointer call)
 {
-  strcpy(buffer, FileName);
+  strncpy(buffer, xmlSavePath.c_str(), 1024);
+  buffer[1023] = '\0';
   QueryFile((char *)"Save as:", buffer, (XtCallbackProc)SaveFileAs_OK);
 
 }	/* END SAVEFILEAS */
@@ -224,10 +329,15 @@ void SaveFileAs(Widget w, XtPointer client, XtPointer call)
 /* -------------------------------------------------------------------- */
 void SaveFile(Widget w, XtPointer client, XtPointer call)
 {
-  if (SaveVarDB(FileName) == ERR)
-    ShowError((char *)"Error trying to save, aborted.");
-  else
+  try
+    {
+    vdbFile.save(xmlSavePath);
     ChangesMade = FALSE;
+    }
+  catch (...)
+    {
+    ShowError((char *)"Error trying to save, aborted.");
+    }
 
 }	/* END SAVEFILE */
 
@@ -235,67 +345,61 @@ void SaveFile(Widget w, XtPointer client, XtPointer call)
 void EditVariable(Widget w, XtPointer client, XmListCallbackStruct *call)
 {
   int		pos, *pos_list, pcnt;
-  float		fl;
-  int32_t	lv;
-  static const char	*f_format = "%.6f";
-  static const char	*l_format = "%d";
 
   if (XmListGetSelectedPos(list, &pos_list, &pcnt) == FALSE)
     return;
 
   pos = pos_list[0] - 1;
 
-  if (pos > VarDB_nRecords)
+  if (pos < 0 || pos >= (int)sortedVars.size())
     return;
 
+  VDBVar* var = sortedVars[pos];
 
-  XmTextFieldSetString(EFtext[0], ((struct var_v2 *)VarDB)[pos].Name);
-  XmTextFieldSetString(EFtext[1], ((struct var_v2 *)VarDB)[pos].Title);
-  XmTextFieldSetString(EFtext[2], ((struct var_v2 *)VarDB)[pos].Units);
-  XmTextFieldSetString(EFtext[3], ((struct var_v2 *)VarDB)[pos].AlternateUnits);
+  XmTextFieldSetString(EFtext[0],
+    const_cast<char*>(var->name().c_str()));
+  XmTextFieldSetString(EFtext[1],
+    const_cast<char*>(var->get_attribute(VDBVar::LONG_NAME).c_str()));
+  XmTextFieldSetString(EFtext[2],
+    const_cast<char*>(var->get_attribute(VDBVar::UNITS).c_str()));
+  XmTextFieldSetString(EFtext[3],
+    const_cast<char*>(var->get_attribute(VDBVar::ALTERNATE_UNITS).c_str()));
 
-  lv = ntohl(((struct var_v2 *)VarDB)[pos].voltageRange[0]);
-  snprintf(buffer, 1024, l_format, lv);
-  XmTextFieldSetString(EFtext[4], buffer);
+  /* Voltage range: stored as "lower upper" string in XML */
+  std::string vrLo, vrHi;
+  parsePair(var->get_attribute(VDBVar::VOLTAGE_RANGE), vrLo, vrHi);
+  XmTextFieldSetString(EFtext[4], const_cast<char*>(vrLo.c_str()));
+  XmTextFieldSetString(EFtext[5], const_cast<char*>(vrHi.c_str()));
 
-  lv = ntohl(((struct var_v2 *)VarDB)[pos].voltageRange[1]);
-  snprintf(buffer, 1024, l_format, lv);
-  XmTextFieldSetString(EFtext[5], buffer);
+  XmTextFieldSetString(EFtext[6],
+    const_cast<char*>(var->get_attribute(VDBVar::DEFAULT_SAMPLE_RATE).c_str()));
 
-  lv = ntohl(((struct var_v2 *)VarDB)[pos].defaultSampleRate);
-  snprintf(buffer, 1024, l_format, lv);
-  XmTextFieldSetString(EFtext[6], buffer);
+  XmTextFieldSetString(EFtext[7],
+    const_cast<char*>(var->get_attribute(VDBVar::MIN_LIMIT).c_str()));
+  XmTextFieldSetString(EFtext[8],
+    const_cast<char*>(var->get_attribute(VDBVar::MAX_LIMIT).c_str()));
 
-  fl = ntohf(((struct var_v2 *)VarDB)[pos].MinLimit);
-  snprintf(buffer, 1024, f_format, fl);
-  XmTextFieldSetString(EFtext[7], buffer);
+  /* Cal range: stored as "lower upper" string in XML */
+  std::string crLo, crHi;
+  parsePair(var->get_attribute(VDBVar::CAL_RANGE), crLo, crHi);
+  XmTextFieldSetString(EFtext[9], const_cast<char*>(crLo.c_str()));
+  XmTextFieldSetString(EFtext[10], const_cast<char*>(crHi.c_str()));
 
-  fl = ntohf(((struct var_v2 *)VarDB)[pos].MaxLimit);
-  snprintf(buffer, 1024, f_format, fl);
-  XmTextFieldSetString(EFtext[8], buffer);
+  /* Is Analog toggle */
+  bool isAnalog = var->get_attribute_value<bool>(VDBVar::IS_ANALOG);
+  XmToggleButtonSetState(analogButton, isAnalog, false);
 
-  fl = ntohf(((struct var_v2 *)VarDB)[pos].CalRange[0]);
-  snprintf(buffer, 1024, f_format, fl);
-  XmTextFieldSetString(EFtext[9], buffer);
+  /* Category dropdown */
+  std::string catName = var->get_attribute(VDBVar::CATEGORY);
+  SetCategory(NULL, (XtPointer)(long)findIndex(categoryNames, catName), NULL);
 
-  fl = ntohf(((struct var_v2 *)VarDB)[pos].CalRange[1]);
-  snprintf(buffer, 1024, f_format, fl);
-  XmTextFieldSetString(EFtext[10], buffer);
+  /* Standard name dropdown */
+  std::string stdName = var->get_attribute(VDBVar::STANDARD_NAME);
+  SetStandardName(NULL, (XtPointer)(long)findIndex(stdNames, stdName), NULL);
 
-  if (ntohl(((struct var_v2 *)VarDB)[pos].is_analog))
-    {
-    XmToggleButtonSetState(analogButton, true, false);
-    }
-  else
-    {
-    XmToggleButtonSetState(analogButton, false, false);
-    }
-
-  SetCategory(NULL, (XtPointer)ntohl(((struct var_v2 *)VarDB)[pos].Category), NULL);
-  SetStandardName(NULL, (XtPointer)ntohl(((struct var_v2 *)VarDB)[pos].standard_name), NULL);
-
-  XmToggleButtonSetState(referenceButton,
-		ntohl(((struct var_v2 *)VarDB)[pos].reference), False);
+  /* Reference toggle */
+  bool isRef = var->get_attribute_value<bool>(VDBVar::REFERENCE);
+  XmToggleButtonSetState(referenceButton, isRef, False);
 
 }	/* END EDITVARIABLE */
 
@@ -303,115 +407,114 @@ void EditVariable(Widget w, XtPointer client, XmListCallbackStruct *call)
 void Accept(Widget w, XtPointer client, XtPointer call)
 {
   char		*p;
-  XmString	name[1000];
-  int		i, pos, *pos_list, pcnt, firstVisPos;
+  int		firstVisPos;
   Arg		args[5];
-  float		f;
-  int32_t	l;
 
 
   p = XmTextFieldGetString(EFtext[0]);
   strupr(p);
   XmTextFieldSetString(EFtext[0], p);
-  name[0] = XmStringCreateLocalized(p);
+  std::string varName(p);
+  XtFree(p);
 
-  i = 0;
+  int i = 0;
   XtSetArg(args[i], XmNtopItemPosition, &firstVisPos); ++i;
   XtGetValues(list, args, i);
 
-  if (XmListGetMatchPos(list, name[0], &pos_list, &pcnt))
-    pos = pos_list[0] - 1;
-  else
-    {
-    void	*tmp;
+  /* Get or create the variable in the VDBFile. */
+  VDBVar* var = vdbFile.get_var(varName);
+  if (!var)
+    var = vdbFile.add_var(varName);
 
-    if ((tmp = (void *)realloc(VarDB, (unsigned)(VarDB_nRecords+1) *
-				(unsigned)VarDB_RecLength)) == NULL)
-      {
-      ShowError((char *)"Memory allocation error, failed to ADD variable.");
-      return;
-      }
-
-    VarDB = tmp;
-
-    for (pos = VarDB_nRecords-1; pos >= 0; --pos)
-      if (strcmp(p, ((struct var_v2 *)VarDB)[pos].Name) < 0)
-        memcpy(	&((struct var_v2 *)VarDB)[pos+1],
-		&((struct var_v2 *)VarDB)[pos],
-		sizeof(struct var_v2));
-      else
-        break;
-
-    ++pos;
-    ++VarDB_nRecords;
-    }
-
-  XmStringFree(name[0]);
-
-  strcpy(((struct var_v2 *)VarDB)[pos].Name, p);
-  XtFree(p);
-
+  /* Set all attributes from the edit fields. */
   p = XmTextFieldGetString(EFtext[1]);
-  strcpy(((struct var_v2 *)VarDB)[pos].Title, p);
+  var->set_attribute(VDBVar::LONG_NAME, std::string(p));
   XtFree(p);
 
   p = XmTextFieldGetString(EFtext[2]);
-  strcpy(((struct var_v2 *)VarDB)[pos].Units, p);
+  var->set_attribute(VDBVar::UNITS, std::string(p));
   XtFree(p);
 
   p = XmTextFieldGetString(EFtext[3]);
-  strcpy(((struct var_v2 *)VarDB)[pos].AlternateUnits, p);
+  if (strlen(p) > 0)
+    var->set_attribute(VDBVar::ALTERNATE_UNITS, std::string(p));
   XtFree(p);
 
+  /* Is Analog */
+  bool isAnalog = XmToggleButtonGetState(analogButton);
+  var->set_attribute(VDBVar::IS_ANALOG, isAnalog);
 
-  l = atoi(p = XmTextFieldGetString(EFtext[4]));
-  (((struct var_v2 *)VarDB)[pos].voltageRange[0]) = htonl(l);
+  /* Voltage Range: compose "lower upper" string */
+  char *vrLo = XmTextFieldGetString(EFtext[4]);
+  char *vrHi = XmTextFieldGetString(EFtext[5]);
+  if (isAnalog && (strlen(vrLo) > 0 || strlen(vrHi) > 0))
+    {
+    std::string vr = std::string(vrLo) + " " + std::string(vrHi);
+    var->set_attribute(VDBVar::VOLTAGE_RANGE, vr);
+    }
+  XtFree(vrLo);
+  XtFree(vrHi);
+
+  /* Default Sample Rate */
+  p = XmTextFieldGetString(EFtext[6]);
+  if (isAnalog && strlen(p) > 0)
+    var->set_attribute(VDBVar::DEFAULT_SAMPLE_RATE, std::string(p));
   XtFree(p);
 
-  l = atoi(p = XmTextFieldGetString(EFtext[5]));
-  (((struct var_v2 *)VarDB)[pos].voltageRange[1]) = htonl(l);
+  /* Min/Max Limits */
+  p = XmTextFieldGetString(EFtext[7]);
+  if (strlen(p) > 0)
+    var->set_attribute(VDBVar::MIN_LIMIT, std::string(p));
   XtFree(p);
 
-  l = atoi(p = XmTextFieldGetString(EFtext[6]));
-  (((struct var_v2 *)VarDB)[pos].defaultSampleRate) = htonl(l);
+  p = XmTextFieldGetString(EFtext[8]);
+  if (strlen(p) > 0)
+    var->set_attribute(VDBVar::MAX_LIMIT, std::string(p));
   XtFree(p);
 
-  f = atof(p = XmTextFieldGetString(EFtext[7]));
-  (((struct var_v2 *)VarDB)[pos].MinLimit) = htonf(f);
-  XtFree(p);
+  /* Cal Range: compose "lower upper" string */
+  char *crLo = XmTextFieldGetString(EFtext[9]);
+  char *crHi = XmTextFieldGetString(EFtext[10]);
+  if (strlen(crLo) > 0 || strlen(crHi) > 0)
+    {
+    std::string cr = std::string(crLo) + " " + std::string(crHi);
+    var->set_attribute(VDBVar::CAL_RANGE, cr);
+    }
+  XtFree(crLo);
+  XtFree(crHi);
 
-  f = atof(p = XmTextFieldGetString(EFtext[8]));
-  (((struct var_v2 *)VarDB)[pos].MaxLimit) = htonf(f);
-  XtFree(p);
+  /* Category: stored by name */
+  if (currentCategory >= 0 && currentCategory < (int)categoryNames.size()
+      && categoryNames[currentCategory] != "None")
+    var->set_attribute(VDBVar::CATEGORY, categoryNames[currentCategory]);
 
-  f = atof(p = XmTextFieldGetString(EFtext[9]));
-  (((struct var_v2 *)VarDB)[pos].CalRange[0]) = htonf(f);
-  XtFree(p);
+  /* Standard Name: stored by name */
+  if (currentStdName >= 0 && currentStdName < (int)stdNames.size()
+      && stdNames[currentStdName] != "None")
+    var->set_attribute(VDBVar::STANDARD_NAME, stdNames[currentStdName]);
 
-  f = atof(p = XmTextFieldGetString(EFtext[10]));
-  (((struct var_v2 *)VarDB)[pos].CalRange[1]) = htonf(f);
-  XtFree(p);
+  /* Reference */
+  var->set_attribute(VDBVar::REFERENCE,
+    bool(XmToggleButtonGetState(referenceButton)));
 
-  ((struct var_v2 *)VarDB)[pos].is_analog = htonl(XmToggleButtonGetState(analogButton));
+  /* Rebuild sorted list and refresh display. */
+  rebuildSortedVars();
+  refreshList();
 
-  XmListDeleteAllItems(list);
-
-  for (i = 0; i < VarDB_nRecords; ++i)
-    name[i] = XmStringCreateLocalized(((struct var_v2 *)VarDB)[i].Name);
-
-
-  XmListAddItems(list, name, VarDB_nRecords, 0);
-
-  for (i = 0; i < VarDB_nRecords; ++i)
-    XmStringFree(name[i]);
+  /* Find the variable's position in the sorted list and select it. */
+  int selectPos = 0;
+  for (size_t j = 0; j < sortedVars.size(); ++j)
+    {
+    if (sortedVars[j]->name() == varName)
+      {
+      selectPos = (int)j + 1;
+      break;
+      }
+    }
 
   XmListSetPos(list, firstVisPos);
-  XmListSelectPos(list, pos+1, FALSE);
-
-  ((struct var_v2 *)VarDB)[pos].Category = htonl(currentCategory);
-  ((struct var_v2 *)VarDB)[pos].standard_name = htonl(currentStdName);
-  ((struct var_v2 *)VarDB)[pos].reference =
-			htonl(XmToggleButtonGetState(referenceButton));
+  if (selectPos > 0)
+    XmListSelectPos(list, selectPos, FALSE);
 
   ChangesMade = TRUE;
 
@@ -425,6 +528,7 @@ void Clear(Widget w, XtPointer client, XtPointer call)
   for (i = 0; i < 11; ++i)
     XmTextFieldSetString(EFtext[i], (char *)"");
 
+  XmToggleButtonSetState(analogButton, False, False);
   SetCategory(NULL, 0, NULL);
   SetStandardName(NULL, 0, NULL);
   XmToggleButtonSetState(referenceButton, False, False);
@@ -434,7 +538,7 @@ void Clear(Widget w, XtPointer client, XtPointer call)
 /* -------------------------------------------------------------------- */
 void Delete(Widget w, XtPointer client, XtPointer call)
 {
-  int	i, pos, *pos_list, pcnt;
+  int	*pos_list, pcnt;
 
   if (XmListGetSelectedPos(list, &pos_list, &pcnt) == FALSE)
     {
@@ -442,20 +546,18 @@ void Delete(Widget w, XtPointer client, XtPointer call)
     return;
     }
 
+  int pos = pos_list[0] - 1;
 
-  pos = pos_list[0];
+  if (pos < 0 || pos >= (int)sortedVars.size())
+    return;
 
-  for (i = pos; i < VarDB_nRecords; ++i)
-    memcpy(	(char *)&((struct var_v2 *)VarDB)[i-1],
-		(char *)&((struct var_v2 *)VarDB)[i],
-		sizeof(struct var_v2));
+  vdbFile.remove_var(sortedVars[pos]->name());
 
-  --VarDB_nRecords;
-
-  XmListDeletePos(list, pos_list[0]);
+  rebuildSortedVars();
+  refreshList();
 
   ChangesMade = TRUE;
-		
+
 }	/* END DELETE */
 
 /* END CCB.C */
