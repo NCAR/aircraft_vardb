@@ -103,7 +103,7 @@ int ReadCategories()
     for (p = strchr(line, ',')+1; *p == ' ' || *p == '\t'; ++p)
       ;
 
-    strncpy(Category[nCategories]->Name, p, CAT_NAME_LEN);
+    strncpy(Category[nCategories]->Name, p, CAT_NAME_LEN-1);
     Category[nCategories]->Name[strlen(Category[nCategories]->Name)-1]='\0';
     ++nCategories;
     }
