@@ -102,7 +102,7 @@ int ReadStandardNames()
     for (p = strchr(line, ',')+1; *p == ' ' || *p == '\t'; ++p)
       ;
 
-    strncpy(StdName[nStdNames]->Name, p, STD_NAME_LEN-1);
+    strncpy(StdName[nStdNames]->Name, p, STD_NAME_LEN);
     StdName[nStdNames]->Name[strlen(StdName[nStdNames]->Name)-1]='\0';
     ++nStdNames;
   }

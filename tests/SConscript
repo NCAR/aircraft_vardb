@@ -4,6 +4,7 @@ import os
 
 test_sources = Split("""
 test_vdbfile.cc
+test_vared_logic.cc
 """)
 
 def gtest(env):
@@ -51,3 +52,10 @@ if projdir:
 
 # Test a direct translation
 vdb2xml_compare(env, 'contrast_vardb.xml', env.File('contrast_vardb.xml').abspath)
+
+# ---- Qt5 GUI tests (QTest) ----
+# Use a variant dir so VaredMainWindow.o lands in guitest_build/,
+# avoiding conflict with the editor build's VaredMainWindow.o.
+SConscript('guitest.SConscript',
+           variant_dir='guitest_build',
+           duplicate=1)

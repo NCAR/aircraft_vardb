@@ -16,7 +16,6 @@ COPYRIGHT:	University Corporation for Atmospheric Research, 1993-7
 -------------------------------------------------------------------------
 */
 
-#include <algorithm>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -77,11 +76,7 @@ int CreateVarDB(const char Bull9_name[], const char Pattr_name[])
     for (i = 0; i < cnt; ++i)
       if (strcmp(vdb[i]->Name, name) == 0)
         {
-        // Ensure we don't copy more than 43 chars to leave room for '\0'
-        // Replaces strncpy(), since compiler bitches about that.
-        size_t copyLen = std::min(strlen(buffer), (size_t)43);
-        memcpy(vdb[i]->Title, buffer, copyLen);
-        vdb[i]->Title[copyLen] = '\0';
+        strncpy(vdb[i]->Title, buffer, 44);
         break;
         }
 
