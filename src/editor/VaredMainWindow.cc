@@ -1,11 +1,18 @@
 /*
- * VaredMainWindow.cc — Qt5 replacement for the Motif vared GUI.
+ * VaredMainWindow.cc — Qt replacement for the Motif vared GUI.
  *
  * Logic faithfully ported from:
  *   ccb.cc  — callbacks (Accept, Clear, Delete, EditVariable, OpenNewFile_OK, …)
  *   initv.cc — Initialize()
  *   Xwin.cc  — CreateMainWindow() layout
  *   fbr.h    — resource strings (labels, sizes, colours)
+ *
+ * Changes from original Qt port:
+ *   - Variable list replaced with a QTabWidget holding separate "Raw" and
+ *     "Derived" QListWidgets.  A variable is derived when it carries a
+ *     non-empty DERIVE attribute.
+ *   - Dependency tree (QTreeWidget) below the Accept button shows the full
+ *     recursive dependency graph, expanding automatically when depth ≤ 3.
  */
 
 #include "VaredMainWindow.h"
@@ -52,6 +59,13 @@ static int findIndex(const std::vector<std::string>& vec,
     return 0;
 }
 
+/* Helper: true when var carries a non-empty DERIVE attribute            */
+static bool isDerived(VDBVar* var)
+{
+    return var->has_attribute(VDBVar::DERIVE)
+        && !var->get_attribute(VDBVar::DERIVE).empty();
+}
+
 /* -------------------------------------------------------------------- */
 VaredMainWindow::VaredMainWindow(QWidget* parent)
     : QMainWindow(parent)
@@ -76,7 +90,7 @@ void VaredMainWindow::setupUi()
     editMenu->addAction("Delete Variable", this, &VaredMainWindow::onDelete, QKeySequence("Ctrl+D"));
     editMenu->addAction("Reset Variable",  this, &VaredMainWindow::onReset,  QKeySequence("Ctrl+R"));
 
-    /* ---- Central widget: HBox (form | list) ---- */
+    /* ---- Central widget: HBox (form | right column) ---- */
     QWidget* central = new QWidget(this);
     setCentralWidget(central);
     QHBoxLayout* hbox = new QHBoxLayout(central);
@@ -149,6 +163,7 @@ void VaredMainWindow::setupUi()
     form->addRow("Category:",            m_categoryCombo);
     form->addRow("Standard Name:",       m_stdNameCombo);
     form->addRow("Is reference?:",       m_referenceCheck);
+    form->addRow("",                     m_acceptBtn);
 
     /* Enforce label minimum width (mirrors *editFieldRC*XmLabel.width: 200) */
     for (int i = 0; i < form->rowCount(); ++i) {
@@ -159,10 +174,10 @@ void VaredMainWindow::setupUi()
 
     hbox->addLayout(form);
 
-    /* ---- Right: variable list + Accept button below it ---- */
-    m_varList = new QListWidget;
-    m_varList->setFixedWidth(125);
-    m_varList->setStyleSheet(
+    /* ---- Right: tabbed variable lists + Accept + dependency tree ---- */
+
+    /* Shared style for both list widgets — mirrors original black/green theme */
+    const QString listStyle =
         "QListWidget {"
         "  background-color: black;"
         "  color: green;"
@@ -172,28 +187,89 @@ void VaredMainWindow::setupUi()
         "  width: 12px;"
         "}"
         "QScrollBar::handle:vertical {"
-        "  background-color: #006400;"  /* dark green handle */
+        "  background-color: #006400;"
+        "  min-height: 20px;"
+        "}"
+        "QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {"
+        "  background: none;"
+        "}";
+
+    m_rawList = new QListWidget;
+    m_rawList->setStyleSheet(listStyle);
+
+    m_derivedList = new QListWidget;
+    m_derivedList->setStyleSheet(listStyle);
+
+    /* visibleItemCount: 22 (matches original fbr.h list height) */
+    QFontMetrics fm(m_rawList->font());
+    const int listHeight = fm.height() * 22 + 4;
+    m_rawList->setMinimumHeight(listHeight);
+    m_derivedList->setMinimumHeight(listHeight);
+
+    m_varTabs = new QTabWidget;
+    m_varTabs->addTab(m_rawList,     "Raw");
+    m_varTabs->addTab(m_derivedList, "Derived");
+    m_varTabs->setMinimumWidth(130);
+    m_varTabs->tabBar()->setExpanding(true);  // tabs fill full tab-bar width
+    m_varTabs->setStyleSheet(
+        "QTabWidget::pane { border: 2px solid #00cc00; background: black; }"
+        "QTabBar::tab {"
+        "  background: #2a2a2a;"
+        "  color: #00cc00;"
+        "  padding: 6px 14px;"
+        "  font-weight: bold;"
+        "  border: 1px solid #006400;"
+        "  border-bottom: none;"
+        "}"
+        "QTabBar::tab:selected {"
+        "  background: #00cc00;"
+        "  color: black;"
+        "  border: 2px solid #00ff00;"
+        "  border-bottom: none;"
+        "}"
+        "QTabBar::tab:!selected:hover {"
+        "  background: #003300;"
+        "}");
+
+    /* Dependency tree — always visible, expands below Accept button */
+    m_depTree = new QTreeWidget;
+    m_depTree->setHeaderLabel("Dependencies");
+    m_depTree->setMinimumHeight(fm.height() * 8 + 4);
+    m_depTree->setStyleSheet(
+        "QTreeWidget {"
+        "  background-color: black;"
+        "  color: green;"
+        "}"
+        "QHeaderView::section {"
+        "  background-color: #1a1a1a;"
+        "  color: #00aa00;"
+        "  padding: 2px;"
+        "}"
+        "QScrollBar:vertical {"
+        "  background-color: #1a1a1a;"
+        "  width: 12px;"
+        "}"
+        "QScrollBar::handle:vertical {"
+        "  background-color: #006400;"
         "  min-height: 20px;"
         "}"
         "QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {"
         "  background: none;"
         "}");
 
-    /* visibleItemCount: 22 */
-    QFontMetrics fm(m_varList->font());
-    m_varList->setMinimumHeight(fm.height() * 22 + 4);
-
     QVBoxLayout* rightCol = new QVBoxLayout;
     rightCol->setSpacing(4);
-    rightCol->addWidget(m_varList);
-    rightCol->addWidget(m_acceptBtn, 0, Qt::AlignHCenter);
+    rightCol->addWidget(m_varTabs);
+    rightCol->addWidget(m_depTree);
 
     hbox->addLayout(rightCol);
 
     /* ---- Connections ---- */
-    connect(m_acceptBtn, &QPushButton::clicked,
+    connect(m_acceptBtn,  &QPushButton::clicked,
             this, &VaredMainWindow::onAccept);
-    connect(m_varList, &QListWidget::itemClicked,
+    connect(m_rawList,    &QListWidget::itemClicked,
+            this, &VaredMainWindow::onVariableSelected);
+    connect(m_derivedList,&QListWidget::itemClicked,
             this, &VaredMainWindow::onVariableSelected);
 }
 
@@ -229,8 +305,13 @@ void VaredMainWindow::loadFile(const QString& path)
 void VaredMainWindow::rebuildSortedVars()
 {
     m_sortedVars.clear();
-    for (int i = 0; i < m_vdbFile.num_vars(); ++i)
-        m_sortedVars.push_back(m_vdbFile.get_var(i));
+    m_varLookup.clear();
+
+    for (int i = 0; i < m_vdbFile.num_vars(); ++i) {
+        VDBVar* v = m_vdbFile.get_var(i);
+        m_sortedVars.push_back(v);
+        m_varLookup[v->name()] = v;
+    }
 
     std::sort(m_sortedVars.begin(), m_sortedVars.end(),
         [](VDBVar* a, VDBVar* b){ return a->name() < b->name(); });
@@ -239,9 +320,16 @@ void VaredMainWindow::rebuildSortedVars()
 /* -------------------------------------------------------------------- */
 void VaredMainWindow::refreshList()
 {
-    m_varList->clear();
-    for (auto* v : m_sortedVars)
-        m_varList->addItem(QString::fromStdString(v->name()));
+    m_rawList->clear();
+    m_derivedList->clear();
+
+    for (auto* v : m_sortedVars) {
+        QString name = QString::fromStdString(v->name());
+        if (::isDerived(v))
+            m_derivedList->addItem(name);
+        else
+            m_rawList->addItem(name);
+    }
 }
 
 /* -------------------------------------------------------------------- */
@@ -305,15 +393,99 @@ void VaredMainWindow::populateFields(VDBVar* var)
 }
 
 /* -------------------------------------------------------------------- */
+void VaredMainWindow::refreshDepTree(VDBVar* var)
+{
+    m_depTree->clear();
+    const QString varName = QString::fromStdString(var->name());
+    m_depTree->setHeaderLabel(QString("%1 dependencies").arg(varName));
+
+    /* Root node is always the selected variable itself, mirroring tree(1) output */
+    QTreeWidgetItem* root = new QTreeWidgetItem(m_depTree);
+    root->setText(0, varName);
+
+    if (!::isDerived(var)) {
+        root->setText(0, varName + "  [raw]");
+        m_depTree->expandAll();
+        return;
+    }
+
+    /* Build one child per immediate dependency, then recurse.
+     * visited tracks the current path to detect cycles without blocking
+     * the same variable from appearing in independent branches. */
+    QString deriveStr = QString::fromStdString(var->get_attribute(VDBVar::DERIVE));
+    const QStringList deps = deriveStr.split(' ', Qt::SkipEmptyParts);
+
+    int maxDepth = 0;
+    for (const QString& dep : deps) {
+        QTreeWidgetItem* item = new QTreeWidgetItem(root);
+        item->setText(0, dep);
+        QSet<QString> visited;
+        visited.insert(varName);
+        int d = buildDepTree(item, dep, visited);
+        maxDepth = std::max(maxDepth, d + 1);
+    }
+
+    if (maxDepth <= 3)
+        m_depTree->expandAll();
+}
+
+/* -------------------------------------------------------------------- */
+int VaredMainWindow::buildDepTree(QTreeWidgetItem* parent,
+                                   const QString& varName,
+                                   QSet<QString>& visited)
+{
+    /* Cycle on the current path — label the node and stop recursing */
+    if (visited.contains(varName)) {
+        parent->setText(0, varName + " [cycle]");
+        return 0;
+    }
+
+    auto it = m_varLookup.find(varName.toStdString());
+    if (it == m_varLookup.end())
+        return 0;   // Unknown variable — treat as leaf
+
+    VDBVar* var = it->second;
+    if (!::isDerived(var))
+        return 0;   // Raw variable — leaf, no children to add
+
+    visited.insert(varName);
+
+    QString deriveStr = QString::fromStdString(var->get_attribute(VDBVar::DERIVE));
+    const QStringList deps = deriveStr.split(' ', Qt::SkipEmptyParts);
+
+    int maxChildDepth = 0;
+    for (const QString& dep : deps) {
+        QTreeWidgetItem* child = new QTreeWidgetItem(parent);
+        child->setText(0, dep);
+        int d = buildDepTree(child, dep, visited);
+        maxChildDepth = std::max(maxChildDepth, d);
+    }
+
+    /* Allow this variable in other independent branches of the tree */
+    visited.remove(varName);
+
+    return maxChildDepth + 1;
+}
+
+/* -------------------------------------------------------------------- */
 /* Slots                                                                  */
 /* -------------------------------------------------------------------- */
 
 void VaredMainWindow::onVariableSelected(QListWidgetItem* item)
 {
     if (!item) return;
-    int pos = m_varList->row(item);
-    if (pos < 0 || pos >= (int)m_sortedVars.size()) return;
-    populateFields(m_sortedVars[pos]);
+
+    /* Clear selection in the other list so only one var is highlighted */
+    if (item->listWidget() == m_rawList)
+        m_derivedList->clearSelection();
+    else
+        m_rawList->clearSelection();
+
+    auto it = m_varLookup.find(item->text().toStdString());
+    if (it == m_varLookup.end()) return;
+
+    populateFields(it->second);
+    refreshDepTree(it->second);
 }
 
 /* -------------------------------------------------------------------- */
@@ -324,8 +496,9 @@ void VaredMainWindow::onAccept()
     if (varName.empty()) return;
     m_nameEdit->setText(QString::fromStdString(varName));
 
-    /* Preserve scroll position (mirrors XmNtopItemPosition logic) */
-    int scrollVal = m_varList->verticalScrollBar()->value();
+    /* Preserve scroll positions in both lists */
+    int rawScroll     = m_rawList->verticalScrollBar()->value();
+    int derivedScroll = m_derivedList->verticalScrollBar()->value();
 
     VDBVar* var = m_vdbFile.get_var(varName);
     if (!var)
@@ -375,14 +548,20 @@ void VaredMainWindow::onAccept()
     rebuildSortedVars();
     refreshList();
 
-    /* Re-select the variable and restore scroll position */
-    int selectRow = -1;
-    for (int i = 0; i < (int)m_sortedVars.size(); ++i) {
-        if (m_sortedVars[i]->name() == varName) { selectRow = i; break; }
-    }
-    if (selectRow >= 0)
-        m_varList->setCurrentRow(selectRow);
-    m_varList->verticalScrollBar()->setValue(scrollVal);
+    /* Restore scroll positions */
+    m_rawList->verticalScrollBar()->setValue(rawScroll);
+    m_derivedList->verticalScrollBar()->setValue(derivedScroll);
+
+    /* Re-select the variable in the correct tab */
+    VDBVar* saved = m_vdbFile.get_var(varName);
+    QListWidget* targetList = (saved && ::isDerived(saved))
+                              ? m_derivedList : m_rawList;
+    m_varTabs->setCurrentWidget(targetList);
+
+    QList<QListWidgetItem*> found = targetList->findItems(
+        QString::fromStdString(varName), Qt::MatchExactly);
+    if (!found.isEmpty())
+        targetList->setCurrentItem(found.first());
 
     m_changesMade = true;
 }
@@ -406,24 +585,32 @@ void VaredMainWindow::onClear()
     m_referenceCheck->setChecked(false);
     m_categoryCombo->setCurrentIndex(0);
     m_stdNameCombo->setCurrentIndex(0);
-    m_varList->clearSelection();
+    m_rawList->clearSelection();
+    m_derivedList->clearSelection();
+    m_depTree->clear();
+    m_depTree->setHeaderLabel("Dependencies");
 }
 
 /* -------------------------------------------------------------------- */
 void VaredMainWindow::onDelete()
 {
     /* Mirrors Delete() in ccb.cc */
-    QListWidgetItem* item = m_varList->currentItem();
+    QListWidget* activeList = (m_varTabs->currentIndex() == 0)
+                              ? m_rawList : m_derivedList;
+    QListWidgetItem* item = activeList->currentItem();
     if (!item) {
         QMessageBox::warning(this, "Warning", "No variable selected to delete.");
         return;
     }
-    int pos = m_varList->row(item);
-    if (pos < 0 || pos >= (int)m_sortedVars.size()) return;
 
-    m_vdbFile.remove_var(m_sortedVars[pos]->name());
+    auto it = m_varLookup.find(item->text().toStdString());
+    if (it == m_varLookup.end()) return;
+
+    m_vdbFile.remove_var(it->second->name());
     rebuildSortedVars();
     refreshList();
+    m_depTree->clear();
+    m_depTree->setHeaderLabel("Dependencies");
     m_changesMade = true;
 }
 
@@ -431,7 +618,9 @@ void VaredMainWindow::onDelete()
 void VaredMainWindow::onReset()
 {
     /* "Reset Variable" = re-populate fields from the currently selected var */
-    onVariableSelected(m_varList->currentItem());
+    QListWidget* activeList = (m_varTabs->currentIndex() == 0)
+                              ? m_rawList : m_derivedList;
+    onVariableSelected(activeList->currentItem());
 }
 
 /* -------------------------------------------------------------------- */
