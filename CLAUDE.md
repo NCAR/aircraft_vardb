@@ -42,6 +42,33 @@ When you find a deprecated practice:
    this project), suggest a PR to github.com/NCAR/eol-se-guidelines. Skip if
    it's project-specific.
 
+## Accessibility
+- Do not rely on color alone to convey state. Always pair a color change with a
+  second cue: border weight, icon, pattern, or text label.
+- Prefer colorblind-safe palettes. Avoid red/green as the sole distinguishing
+  pair (deuteranopia/protanopia is the most common form). Amber + bold border
+  is the current convention for invalid field state in the Qt editor.
+- Screen reader support for Qt desktop apps is an open problem on this project.
+  Do not add features that make it harder (e.g. custom-painted widgets with no
+  accessible text). Flag any new widget that has no accessible name or
+  description so it can be addressed when a solution is identified.
+
+### Structural accessibility work (deferred — needs real screen-reader testing)
+
+The dependency tree (QTreeWidget) in vared_qt announces node text via the
+platform bridge on macOS VoiceOver and Windows NVDA, but dynamic subtree
+narration (reading the full recursive structure on selection) requires a custom
+QAccessibleInterface subclass. Specifically:
+
+- Subclass QAccessibleInterface for the tree widget.
+- Override `text(QAccessible::Text)` to return a human-readable description of
+  the full dependency path from the selected node to its leaves.
+- Register the interface with `QAccessible::installFactory`.
+- Reference: Qt docs — "Implementing Accessibility" and QAccessibleInterface.
+- This work should be driven by a tester with a real screen reader (VoiceOver
+  on macOS or NVDA on Windows) to verify the narration is actually useful,
+  not just technically present. Do not implement blind (pun intended).
+
 ## Licensing and cost
 - Never introduce a dependency whose license is incompatible with the project,
   or change the project license, without a new release and team sign-off.
