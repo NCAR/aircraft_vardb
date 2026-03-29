@@ -15,7 +15,9 @@ using std::cerr;
 using std::endl;
 
 static const char COMMENT = '#';
-static const float fill_value = -32767.0;
+
+// This is the generic nimbus fill_value used ni the netCDF files.
+//static const float fill_value = -32767.0;
 
 extern long	VarDB_nRecords;
 
