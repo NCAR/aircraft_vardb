@@ -73,11 +73,14 @@ static bool isValidFloat(const QString& text)
     return ok;
 }
 
-/* Helper: true when var carries a non-empty DERIVE attribute            */
+/* Helper: true when var has non-empty DEPENDENCIES — i.e. it is computed
+ * from other variables.  A RAW variable has no dependencies (it comes from
+ * a sensor) but may still carry a DERIVE list naming variables that use it
+ * as an input; that forward-reference does not make it derived. */
 static bool isDerived(VDBVar* var)
 {
-    return var->has_attribute(VDBVar::DERIVE)
-        && !var->get_attribute(VDBVar::DERIVE).empty();
+    return var->has_attribute(VDBVar::DEPENDENCIES)
+        && !var->get_attribute(VDBVar::DEPENDENCIES).empty();
 }
 
 /* -------------------------------------------------------------------- */
@@ -618,35 +621,44 @@ void VaredMainWindow::refreshDepTree(VDBVar* var)
 {
     m_depTree->clear();
     const QString varName = QString::fromStdString(var->name());
-    m_depTree->setHeaderLabel(QString("%1 dependencies").arg(varName));
+    m_depTree->setHeaderLabel(QString("%1 relationships").arg(varName));
 
-    /* Root node is always the selected variable itself, mirroring tree(1) output */
+    /* Root node is always the selected variable itself */
     QTreeWidgetItem* root = new QTreeWidgetItem(m_depTree);
-    root->setText(0, varName);
-
-    if (!::isDerived(var)) {
-        root->setText(0, varName + "  [raw]");
-        m_depTree->expandAll();
-        return;
-    }
-
-    /* Build one child per immediate dependency, then recurse.
-     * visited tracks the current path to detect cycles without blocking
-     * the same variable from appearing in independent branches. */
-    QString deriveStr = QString::fromStdString(var->get_attribute(VDBVar::DERIVE));
-    const QStringList deps = deriveStr.split(' ', Qt::SkipEmptyParts);
+    root->setText(0, ::isDerived(var) ? varName : varName + "  [raw]");
 
     int maxDepth = 0;
-    for (const QString& dep : deps) {
-        QTreeWidgetItem* item = new QTreeWidgetItem(root);
-        item->setText(0, dep);
-        QSet<QString> visited;
-        visited.insert(varName);
-        int d = buildDepTree(item, dep, visited);
-        maxDepth = std::max(maxDepth, d + 1);
+
+    /* ---- "Depends on" section: what this variable requires as inputs ---- */
+    QString depsStr = QString::fromStdString(var->get_attribute(VDBVar::DEPENDENCIES));
+    const QStringList deps = depsStr.split(' ', Qt::SkipEmptyParts);
+    if (!deps.isEmpty()) {
+        QTreeWidgetItem* depsHeader = new QTreeWidgetItem(root);
+        depsHeader->setText(0, "depends on");
+        for (const QString& dep : deps) {
+            QTreeWidgetItem* item = new QTreeWidgetItem(depsHeader);
+            item->setText(0, dep);
+            QSet<QString> visited;
+            visited.insert(varName);
+            int d = buildDepTree(item, dep, visited);
+            maxDepth = std::max(maxDepth, d + 2);
+        }
     }
 
-    if (maxDepth <= 3)
+    /* ---- "Used to derive" section: variables that use this one as an input ---- */
+    QString deriveStr = QString::fromStdString(var->get_attribute(VDBVar::DERIVE));
+    const QStringList derived = deriveStr.split(' ', Qt::SkipEmptyParts);
+    if (!derived.isEmpty()) {
+        QTreeWidgetItem* deriveHeader = new QTreeWidgetItem(root);
+        deriveHeader->setText(0, "used to derive");
+        for (const QString& d : derived) {
+            QTreeWidgetItem* item = new QTreeWidgetItem(deriveHeader);
+            item->setText(0, d);
+        }
+        maxDepth = std::max(maxDepth, 2);
+    }
+
+    if (maxDepth <= 4)
         m_depTree->expandAll();
 }
 
@@ -671,7 +683,7 @@ int VaredMainWindow::buildDepTree(QTreeWidgetItem* parent,
 
     visited.insert(varName);
 
-    QString deriveStr = QString::fromStdString(var->get_attribute(VDBVar::DERIVE));
+    QString deriveStr = QString::fromStdString(var->get_attribute(VDBVar::DEPENDENCIES));
     const QStringList deps = deriveStr.split(' ', Qt::SkipEmptyParts);
 
     int maxChildDepth = 0;
