@@ -38,4 +38,4 @@ if qt_env.EnableQtModules(['QtCore', 'QtWidgets']):
         qt_env.Install(qt_env['INSTALL_PREFIX']+'/bin', vared_qt)
 else:
     Export({'vmw_lib': []})
-    print("Qt5 not found — skipping vared_qt build")
+    print("Qt5 not found skipping vared_qt build")

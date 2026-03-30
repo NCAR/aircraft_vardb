@@ -24,4 +24,3 @@ variables = env.GlobalVariables()
 variables.Update(env)
 Help(variables.GenerateHelpText(env))
 
-Clean('.', ['config.log', 'build/', '.sconsign.dblite'])
