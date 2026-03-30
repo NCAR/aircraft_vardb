@@ -25,7 +25,19 @@ if dt_env.get('INSTALL_VARDB') and dt_env['INSTALL_VARDB'] == True:
     dt_env.Install(dt_env['INSTALL_PREFIX']+'/bin', apply_deptable)
 
 # ---- Qt5 build ----
-qt_env = Environment(tools=['default', 'prefixoptions', 'vardb', 'netcdf', 'raf', 'qt5'])
+# Propagate PKG_CONFIG_PATH from the shell, then append the standard rpm
+# layout path so pkg-config finds Qt5 even when it is not in the user's
+# environment (common on RHEL/Fedora where qt5-qtbase-devel installs .pc
+# files under /usr/lib64/pkgconfig rather than the default search path).
+import os
+_pkg_config_path = os.environ.get('PKG_CONFIG_PATH', '')
+_rpm_qt5_pc = '/usr/lib64/pkgconfig'
+if _rpm_qt5_pc not in _pkg_config_path.split(':'):
+    _pkg_config_path = ':'.join(filter(None, [_pkg_config_path, _rpm_qt5_pc]))
+
+qt_env = Environment(tools=['default', 'prefixoptions', 'vardb', 'netcdf', 'raf', 'qt5'],
+                     ENV={'PATH': os.environ['PATH'],
+                          'PKG_CONFIG_PATH': _pkg_config_path})
 
 qt_env.Append(CXXFLAGS=Split("-std=c++17 -Wall -g -O2"))
 
