@@ -14,7 +14,8 @@ test_env = Environment(tools=['default', 'vardb', 'netcdf', 'raf', 'qt5', 'testi
 test_env.Append(CXXFLAGS=Split('-std=c++17 -Wall -g -O2'))
 test_env.Append(CPPPATH=['#/src/editor'])
 
-if vmw_lib and test_env.EnableQtModules(['QtCore', 'QtWidgets', 'QtTest']):
+test_env.EnableQtModules(['QtCore', 'QtWidgets', 'QtTest'])
+if vmw_lib and test_env.get('QT5_MOC'):
     # Link libvaredmw.a via LIBS (not as a source) so the qt5 automoc emitter
     # never sees it — the emitter only processes C++ source nodes.
     test_env.Append(LIBPATH=['#/src/editor'])

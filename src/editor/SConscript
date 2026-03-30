@@ -30,18 +30,21 @@ if dt_env.get('INSTALL_VARDB') and dt_env['INSTALL_VARDB'] == True:
 # environment (common on RHEL/Fedora where qt5-qtbase-devel installs .pc
 # files under /usr/lib64/pkgconfig rather than the default search path).
 import os
-_pkg_config_path = os.environ.get('PKG_CONFIG_PATH', '')
 _rpm_qt5_pc = '/usr/lib64/pkgconfig'
+_pkg_config_path = os.environ.get('PKG_CONFIG_PATH', '')
 if _rpm_qt5_pc not in _pkg_config_path.split(':'):
-    _pkg_config_path = ':'.join(filter(None, [_pkg_config_path, _rpm_qt5_pc]))
+    os.environ['PKG_CONFIG_PATH'] = ':'.join(filter(None, [_pkg_config_path, _rpm_qt5_pc]))
 
-qt_env = Environment(tools=['default', 'prefixoptions', 'vardb', 'netcdf', 'raf', 'qt5'],
-                     ENV={'PATH': os.environ['PATH'],
-                          'PKG_CONFIG_PATH': _pkg_config_path})
+qt_env = Environment(tools=['default', 'prefixoptions', 'vardb', 'netcdf', 'raf', 'qt5'])
 
 qt_env.Append(CXXFLAGS=Split("-std=c++17 -Wall -g -O2"))
 
-if qt_env.EnableQtModules(['QtCore', 'QtWidgets']):
+# EnableQtModules sets up CPPPATH/LIBS regardless of its return value.
+# The return value is inverted in the eol_scons tool (returns False on
+# success on Linux), so use QT5_MOC — set by generate() only when Qt
+# is actually found — as the reliable availability check instead.
+qt_env.EnableQtModules(['QtCore', 'QtWidgets'])
+if qt_env.get('QT5_MOC'):
     # Build VaredMainWindow as a static convenience library so the test suite
     # can link against it without recompiling under a different Qt environment.
     vmw_lib = qt_env.StaticLibrary('varedmw', ['VaredMainWindow.cc'])
