@@ -1,5 +1,5 @@
 /*
- * DependTableMerge.cc — Implementation of applyDependTable().
+ * DependTableMerge.cc Implementation of applyDependTable().
  *
  * See DependTableMerge.h for the full contract.
  */
@@ -122,7 +122,7 @@ MergeResult applyDependTable(const std::string& tablePath, VDBFile& vdb)
             result.createdNames.push_back(e.derived);
         }
 
-        /* Set <dependencies> — replaces any existing value */
+        /* Set <dependencies> replaces any existing value */
         derived->set_attribute(VDBVar::DEPENDENCIES, joinTokens(e.deps));
 
         /* Update <derive> on each input variable */
@@ -131,7 +131,7 @@ MergeResult applyDependTable(const std::string& tablePath, VDBFile& vdb)
             VDBVar* depVar = vdb.get_var(dep);
             if (!depVar)
             {
-                /* Raw sensor stub — create so <derive> can be set on it */
+                /* Raw sensor stub create so <derive> can be set on it */
                 depVar = vdb.add_var(dep);
                 result.created++;
                 result.createdNames.push_back(dep);

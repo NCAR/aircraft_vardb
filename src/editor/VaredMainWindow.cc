@@ -121,7 +121,6 @@ void VaredMainWindow::setupUi()
     splitter->setHandleWidth(6);
     centralLayout->addWidget(splitter, 1);
 
-    /* Find bar — hidden until Ctrl+F */
     m_findBar = new QFrame;
     m_findBar->setFrameShape(QFrame::StyledPanel);
     m_findBar->setStyleSheet(
@@ -244,7 +243,7 @@ void VaredMainWindow::setupUi()
 
     /* ---- Right: tabbed variable lists + dependency tree ---- */
 
-    /* Shared style for both list widgets — mirrors original black/green theme */
+    /* Shared style for both list widgets mirrors original black/green theme */
     const QString listStyle =
         "QListWidget {"
         "  background-color: black;"
@@ -274,7 +273,7 @@ void VaredMainWindow::setupUi()
     m_rawList->setMinimumHeight(listHeight);
     m_derivedList->setMinimumHeight(listHeight);
 
-    /* Filter boxes — styled to match the list: black bg, green text */
+    /* Filter boxes styled to match the list: black bg, green text */
     const QString filterStyle =
         "QLineEdit {"
         "  background-color: black;"
@@ -326,7 +325,7 @@ void VaredMainWindow::setupUi()
         "  background: #003300;"
         "}");
 
-    /* Dependency tree — always visible, expands below Accept button */
+    /* Dependency tree always visible, expands below Accept button */
     m_depTree = new QTreeWidget;
     m_depTree->setHeaderLabel("Dependencies");
     m_depTree->setMinimumHeight(fm.height() * 8 + 4);
@@ -669,7 +668,7 @@ int VaredMainWindow::buildDepTree(QTreeWidgetItem* parent,
                                    const QString& varName,
                                    QSet<QString>& visited)
 {
-    /* Cycle on the current path — label the node and stop recursing */
+    /* Cycle on the current path label the node and stop recursing */
     if (visited.contains(varName)) {
         parent->setText(0, varName + " [cycle]");
         return 0;
@@ -677,11 +676,11 @@ int VaredMainWindow::buildDepTree(QTreeWidgetItem* parent,
 
     auto it = m_varLookup.find(varName.toStdString());
     if (it == m_varLookup.end())
-        return 0;   // Unknown variable — treat as leaf
+        return 0;   // Unknown variable: treat as leaf
 
     VDBVar* var = it->second;
     if (!::isDerived(var))
-        return 0;   // Raw variable — leaf, no children to add
+        return 0;   // Raw variable: leaf, no children to add
 
     visited.insert(varName);
 
@@ -716,7 +715,7 @@ void VaredMainWindow::importDependTable(const QString& tablePath)
         return;
     }
 
-    /* Track changes for the quit-summary dialog */
+    /* Track changes for the quit summary dialog */
     for (const auto& name : result.createdNames)
         m_addedVars.insert(QString::fromStdString(name));
     for (const auto& name : result.updatedNames)
@@ -1020,7 +1019,7 @@ void VaredMainWindow::setupAccessibility()
         "across both lists. Shortcut: Ctrl+F.");
     m_findCount->setAccessibleName("Find results count");
 
-    /* ---- Tab order: form fields → accept → lists → find bar ---- */
+    /* ---- Tab order: form fields accept lists find bar ---- */
     setTabOrder(m_nameEdit,       m_titleEdit);
     setTabOrder(m_titleEdit,      m_unitsEdit);
     setTabOrder(m_unitsEdit,      m_altUnitsEdit);
@@ -1100,7 +1099,7 @@ bool VaredMainWindow::validateFields()
         return false;
     }
 
-    /* Cross-field range checks — warn but let the user override */
+    /* Cross-field range checks warn but let the user override */
     QStringList warnings;
 
     auto checkRange = [&](QLineEdit* lo, QLineEdit* hi, const QString& label) {
@@ -1200,7 +1199,7 @@ void VaredMainWindow::onUndo()
     const VarSnapshot& snap = *m_undoSnapshot;
 
     if (snap.wasNew) {
-        /* Accept created this variable — remove it */
+        /* Accept created this variable remove it */
         m_vdbFile.remove_var(snap.name);
         statusBar()->showMessage(QString("Undo: removed %1")
                                  .arg(QString::fromStdString(snap.name)));

@@ -1,5 +1,5 @@
 /*
- * DependTableMerge.h — Parse and apply a *_DependTable file to a VDBFile.
+ * DependTableMerge.h Parse and apply a *_DependTable file to a VDBFile.
  *
  * A DependTable is a whitespace-separated text file where each non-comment
  * line encodes a dependency relationship:

@@ -1,6 +1,6 @@
 #pragma once
 /*
- * VaredMainWindow.h — Qt replacement for the Motif vared GUI.
+ * VaredMainWindow.h: Qt replacement for the Motif vared GUI.
  *
  * Faithfully mirrors the layout and behaviour of Xwin.cc / ccb.cc / initv.cc.
  *
@@ -57,15 +57,15 @@ private slots:
     void onFileOpen();
     void onFileSave();
     void onFileSaveAs();
-    void onImportDependTable();  // File menu → "Merge DependTable..."
+    void onImportDependTable();  // File menu "Merge DependTable..."
     void onVariableSelected(QListWidgetItem* item);
-    void onAccept();
+    void onAccept()
     void onClear();
     void onDelete();
     void onReset();      // "Reset Variable" = re-populate fields from current selection
     void onFocusList();  // return keyboard focus to the active list
-    void onTreeContextMenu(const QPoint& pos);   // right-click dep tree → Select variable
-    void onListContextMenu(const QPoint& pos);   // right-click list → Duplicate variable
+    void onTreeContextMenu(const QPoint& pos);   // right-click dep tree Select variable
+    void onListContextMenu(const QPoint& pos);   // right-click list Duplicate variable
     void onUndo();                               // Ctrl+Z: restore pre-Accept state
     void onFindActivated();                      // Ctrl+F: show/focus find bar
     void onFindChanged(const QString& text);     // live search across all attributes
@@ -131,7 +131,7 @@ private:
     VDBFile           m_vdbFile;
     VarDBConverter    m_vdbConverter;
     std::vector<VDBVar*>               m_sortedVars;
-    std::unordered_map<std::string, VDBVar*> m_varLookup; // fast name → var
+    std::unordered_map<std::string, VDBVar*> m_varLookup; // fast name var
     std::vector<std::string>           m_categoryNames;
     std::vector<std::string>           m_stdNames;
     std::string                        m_xmlSavePath;
