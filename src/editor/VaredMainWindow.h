@@ -44,6 +44,12 @@ public:
     /** Load a vardb file (XML or binary with auto-conversion). */
     void loadFile(const QString& path);
 
+    /** Parse @p tablePath and merge dependency relationships into the
+     *  currently-loaded vardb.  Creates missing variables, updates
+     *  <dependencies> and <derive> attributes, refreshes the UI, and
+     *  marks the document dirty.  Safe to call before show(). */
+    void importDependTable(const QString& tablePath);
+
 protected:
     void closeEvent(QCloseEvent* e) override;
 
@@ -51,6 +57,7 @@ private slots:
     void onFileOpen();
     void onFileSave();
     void onFileSaveAs();
+    void onImportDependTable();  // File menu → "Merge DependTable..."
     void onVariableSelected(QListWidgetItem* item);
     void onAccept();
     void onClear();

@@ -15,6 +15,15 @@ env.Default(vared)
 if env.get('INSTALL_VARDB') and env['INSTALL_VARDB'] == True:
   env.Install(env['INSTALL_PREFIX']+'/bin', vared)
 
+# ---- apply_deptable: DependTable → vardb XML importer ----
+dt_env = Environment(tools=['default', 'prefixoptions', 'vardb'])
+dt_env.Append(CXXFLAGS=Split("-std=c++17 -Wall -g -O2"))
+apply_deptable = dt_env.Program("apply_deptable", ["apply_deptable.cc"])
+dt_env.Default(apply_deptable)
+
+if dt_env.get('INSTALL_VARDB') and dt_env['INSTALL_VARDB'] == True:
+    dt_env.Install(dt_env['INSTALL_PREFIX']+'/bin', apply_deptable)
+
 # ---- Qt5 build ----
 qt_env = Environment(tools=['default', 'prefixoptions', 'vardb', 'netcdf', 'raf', 'qt5'])
 
@@ -30,7 +39,7 @@ if qt_env.EnableQtModules(['QtCore', 'QtWidgets']):
     qt_env_prog = qt_env.Clone()
     qt_env_prog.Prepend(LIBS=['varedmw'])
     qt_env_prog.Prepend(LIBPATH=['.'])
-    vared_qt = qt_env_prog.Program("vared_qt", ['main.cc'])
+    vared_qt = qt_env_prog.Program("vared_qt", ['main.cc', 'DependTableMerge.cc'])
     qt_env_prog.Depends(vared_qt, vmw_lib)
     qt_env.Alias('vared_qt', vared_qt)
     qt_env.Default(vared_qt)

@@ -31,7 +31,7 @@ int main(int argc, char* argv[])
     QApplication app(argc, argv);
 
     if (argc < 2) {
-        fprintf(stderr, "Usage: vared var_db_file\n");
+        fprintf(stderr, "Usage: vared_qt <var_db_file> [DependTable]\n");
         return 1;
     }
 
@@ -59,6 +59,9 @@ int main(int argc, char* argv[])
     VaredMainWindow win;
     win.show();
     win.loadFile(QString::fromLocal8Bit(fileName));
+
+    if (argc >= 3)
+        win.importDependTable(QString::fromLocal8Bit(argv[2]));
 
     return app.exec();
 }

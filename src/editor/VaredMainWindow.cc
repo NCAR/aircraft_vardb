@@ -18,6 +18,7 @@
  */
 
 #include "VaredMainWindow.h"
+#include "DependTableMerge.h"
 
 #include <QAccessible>
 #include <QAccessibleEvent>
@@ -99,6 +100,7 @@ void VaredMainWindow::setupUi()
     fileMenu->addAction("Open New File",  this, &VaredMainWindow::onFileOpen,  QKeySequence("Ctrl+O"));
     fileMenu->addAction("Save",           this, &VaredMainWindow::onFileSave,  QKeySequence("Ctrl+S"));
     fileMenu->addAction("Save As",        this, &VaredMainWindow::onFileSaveAs,QKeySequence("Ctrl+A"));
+    fileMenu->addAction("Merge DependTable...", this, &VaredMainWindow::onImportDependTable);
     fileMenu->addSeparator();
     fileMenu->addAction("Quit",           qApp, &QApplication::quit,           QKeySequence("Ctrl+Q"));
 
@@ -698,6 +700,57 @@ int VaredMainWindow::buildDepTree(QTreeWidgetItem* parent,
     visited.remove(varName);
 
     return maxChildDepth + 1;
+}
+
+/* -------------------------------------------------------------------- */
+void VaredMainWindow::importDependTable(const QString& tablePath)
+{
+    if (!m_vdbFile.is_valid()) return;
+
+    MergeResult result = applyDependTable(tablePath.toStdString(), m_vdbFile);
+
+    if (result.updated == 0 && result.created == 0)
+    {
+        QMessageBox::warning(this, "Merge DependTable",
+            "No entries found or the file could not be read.");
+        return;
+    }
+
+    /* Track changes for the quit-summary dialog */
+    for (const auto& name : result.createdNames)
+        m_addedVars.insert(QString::fromStdString(name));
+    for (const auto& name : result.updatedNames)
+        m_modifiedVars.insert(QString::fromStdString(name));
+
+    rebuildSortedVars();
+    refreshList();
+
+    m_changesMade = true;
+    updateStatusBar();
+
+    QMessageBox::information(this, "Merge DependTable",
+        QString("Import complete:\n"
+                "  %1 variable(s) updated\n"
+                "  %2 variable(s) created")
+        .arg(result.updated)
+        .arg(result.created));
+}
+
+/* -------------------------------------------------------------------- */
+void VaredMainWindow::onImportDependTable()
+{
+    if (!m_vdbFile.is_valid())
+    {
+        QMessageBox::warning(this, "Merge DependTable",
+            "Open a vardb file first.");
+        return;
+    }
+
+    QString path = QFileDialog::getOpenFileName(
+        this, "Select DependTable", QString(), "DependTable files (*)");
+    if (path.isEmpty()) return;
+
+    importDependTable(path);
 }
 
 /* -------------------------------------------------------------------- */
