@@ -33,6 +33,7 @@ if qt_env.EnableQtModules(['QtCore', 'QtWidgets']):
     vared_qt = qt_env_prog.Program("vared_qt", ['main.cc'])
     qt_env_prog.Depends(vared_qt, vmw_lib)
     qt_env.Alias('vared_qt', vared_qt)
+    qt_env.Default(vared_qt)
 
     if qt_env.get('INSTALL_VARDB') and qt_env['INSTALL_VARDB'] == True:
         qt_env.Install(qt_env['INSTALL_PREFIX']+'/bin', vared_qt)
