@@ -59,7 +59,7 @@ private slots:
     void onFileSaveAs();
     void onImportDependTable();  // File menu "Merge DependTable..."
     void onVariableSelected(QListWidgetItem* item);
-    void onAccept()
+    void onAccept();
     void onClear();
     void onDelete();
     void onReset();      // "Reset Variable" = re-populate fields from current selection

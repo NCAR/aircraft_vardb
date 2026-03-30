@@ -151,6 +151,8 @@ void VaredMainWindow::setupUi()
     QWidget* rightPane = new QWidget;
     splitter->addWidget(leftPane);
     splitter->addWidget(rightPane);
+    splitter->setCollapsible(0, false);
+    splitter->setCollapsible(1, false);
 
     QVBoxLayout* leftBox = new QVBoxLayout(leftPane);
     leftBox->setContentsMargins(0, 0, 4, 0);
@@ -351,11 +353,20 @@ void VaredMainWindow::setupUi()
         "  background: none;"
         "}");
 
+    /* Vertical splitter lets the user resize the var-list vs. dep-tree panels.
+     * Collapsing disabled so neither pane can be dragged out of view. */
+    QSplitter* rightSplitter = new QSplitter(Qt::Vertical);
+    rightSplitter->addWidget(m_varTabs);
+    rightSplitter->addWidget(m_depTree);
+    rightSplitter->setCollapsible(0, false);
+    rightSplitter->setCollapsible(1, false);
+    rightSplitter->setStretchFactor(0, 3);   /* var list gets 3x initial space */
+    rightSplitter->setStretchFactor(1, 1);
+
     QVBoxLayout* rightCol = new QVBoxLayout(rightPane);
     rightCol->setContentsMargins(4, 0, 0, 0);
-    rightCol->setSpacing(4);
-    rightCol->addWidget(m_varTabs);
-    rightCol->addWidget(m_depTree);
+    rightCol->setSpacing(0);
+    rightCol->addWidget(rightSplitter);
 
     /* ---- Connections ---- */
     connect(m_acceptBtn,  &QPushButton::clicked,
