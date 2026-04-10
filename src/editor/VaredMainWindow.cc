@@ -21,6 +21,9 @@
 #include "DependTableMerge.h"
 
 #include <QAccessible>
+#include <QPainter>
+#include <QProxyStyle>
+#include <QStyleOption>
 #include <QAccessibleEvent>
 #include <QApplication>
 #include <QFileDialog>
@@ -43,6 +46,60 @@
 extern "C" {
 char* strupr(char*);
 }
+
+/* -------------------------------------------------------------------- */
+/* Custom branch-indicator style for QTreeWidget.
+ *
+ * @remarks Qt's QSS `color` property does not apply to branch indicators;
+ * only `image: url(...)` or `background-color` work in CSS.  background-color
+ * replaces the entire cell and hides the arrow glyph.  This proxy style
+ * overrides drawPrimitive(PE_IndicatorBranch) to draw a filled triangle
+ * directly, giving full colour control without requiring image resources.
+ *
+ * collapsed — colour of the right-pointing arrow (node has hidden children)
+ * expanded  — colour of the down-pointing arrow (node is open)
+ */
+class DepTreeStyle : public QProxyStyle
+{
+public:
+    DepTreeStyle(QColor collapsed, QColor expanded, QStyle* base = nullptr)
+        : QProxyStyle(base), m_collapsed(collapsed), m_expanded(expanded) {}
+
+    void drawPrimitive(PrimitiveElement pe, const QStyleOption* opt,
+                       QPainter* p, const QWidget* w) const override
+    {
+        if (pe != PE_IndicatorBranch || !(opt->state & State_Children)) {
+            QProxyStyle::drawPrimitive(pe, opt, p, w);
+            return;
+        }
+
+        const QRect r = opt->rect;
+        const int cx = r.center().x(), cy = r.center().y();
+        const int s  = qMax(3, qMin(r.width(), r.height()) / 3);
+
+        p->save();
+        p->setRenderHint(QPainter::Antialiasing);
+        p->setPen(Qt::NoPen);
+        p->setBrush(opt->state & State_Open ? m_expanded : m_collapsed);
+
+        QPolygonF tri;
+        if (opt->state & State_Open)        // down-pointing: node is expanded
+            tri << QPointF(cx - s, cy - s/2.0)
+                << QPointF(cx + s, cy - s/2.0)
+                << QPointF(cx,     cy + s);
+        else                                // right-pointing: node is collapsed
+            tri << QPointF(cx - s/2.0, cy - s)
+                << QPointF(cx + s,     cy)
+                << QPointF(cx - s/2.0, cy + s);
+
+        p->drawPolygon(tri);
+        p->restore();
+    }
+
+private:
+    QColor m_collapsed;
+    QColor m_expanded;
+};
 
 /* -------------------------------------------------------------------- */
 /* Helper: parse "lo hi" space-separated string into two values         */
@@ -85,8 +142,8 @@ static bool isDerived(VDBVar* var)
 }
 
 /* -------------------------------------------------------------------- */
-VaredMainWindow::VaredMainWindow(QWidget* parent)
-    : QMainWindow(parent)
+VaredMainWindow::VaredMainWindow(const VaredPalette& pal, QWidget* parent)
+    : QMainWindow(parent), m_pal(pal)
 {
     setWindowTitle("Variable DataBase Editor");
     setupUi();
@@ -123,13 +180,14 @@ void VaredMainWindow::setupUi()
 
     m_findBar = new QFrame;
     m_findBar->setFrameShape(QFrame::StyledPanel);
-    m_findBar->setStyleSheet(
-        "QFrame { background: #1a1a1a; border-top: 1px solid #006400; }"
-        "QLabel { color: #00cc00; padding: 0 4px; }"
-        "QLineEdit { background: black; color: #00cc00;"
-        "            border: 1px solid #006400; padding: 2px 4px; }"
-        "QPushButton { background: #2a2a2a; color: #00cc00;"
-        "              border: 1px solid #006400; padding: 2px 8px; }");
+    m_findBar->setStyleSheet(QString(
+        "QFrame { background: %1; border-top: 1px solid %2; }"
+        "QLabel { color: %3; padding: 0 4px; }"
+        "QLineEdit { background: black; color: %3;"
+        "            border: 1px solid %2; padding: 2px 4px; }"
+        "QPushButton { background: #2a2a2a; color: %3;"
+        "              border: 1px solid %2; padding: 2px 8px; }")
+        .arg(m_pal.bgMid, m_pal.border, m_pal.text));
     QHBoxLayout* findLayout = new QHBoxLayout(m_findBar);
     findLayout->setContentsMargins(8, 4, 8, 4);
     findLayout->setSpacing(6);
@@ -246,22 +304,22 @@ void VaredMainWindow::setupUi()
     /* ---- Right: tabbed variable lists + dependency tree ---- */
 
     /* Shared style for both list widgets mirrors original black/green theme */
-    const QString listStyle =
+    const QString listStyle = QString(
         "QListWidget {"
         "  background-color: black;"
-        "  color: green;"
+        "  color: %1;"
         "}"
         "QScrollBar:vertical {"
-        "  background-color: #1a1a1a;"
+        "  background-color: %2;"
         "  width: 12px;"
         "}"
         "QScrollBar::handle:vertical {"
-        "  background-color: #006400;"
+        "  background-color: %3;"
         "  min-height: 20px;"
         "}"
         "QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {"
         "  background: none;"
-        "}";
+        "}").arg(m_pal.text, m_pal.bgMid, m_pal.border);
 
     m_rawList = new QListWidget;
     m_rawList->setStyleSheet(listStyle);
@@ -276,14 +334,14 @@ void VaredMainWindow::setupUi()
     m_derivedList->setMinimumHeight(listHeight);
 
     /* Filter boxes styled to match the list: black bg, green text */
-    const QString filterStyle =
+    const QString filterStyle = QString(
         "QLineEdit {"
         "  background-color: black;"
-        "  color: #00cc00;"
+        "  color: %1;"
         "  border: none;"
-        "  border-bottom: 1px solid #006400;"
+        "  border-bottom: 1px solid %2;"
         "  padding: 2px 4px;"
-        "}";
+        "}").arg(m_pal.text, m_pal.border);
 
     m_rawFilter = new QLineEdit;
     m_rawFilter->setPlaceholderText("filter...");
@@ -308,50 +366,56 @@ void VaredMainWindow::setupUi()
     m_varTabs->addTab(makeTabPage(m_rawFilter,     m_rawList),     "Raw");
     m_varTabs->addTab(makeTabPage(m_derivedFilter, m_derivedList), "Derived");
     m_varTabs->tabBar()->setExpanding(false);  // let each tab size to its text
-    m_varTabs->setStyleSheet(
-        "QTabWidget::pane { border: 2px solid #00cc00; background: black; }"
+    m_varTabs->setStyleSheet(QString(
+        "QTabWidget::pane { border: 2px solid %1; background: black; }"
         "QTabBar::tab {"
         "  background: #2a2a2a;"
-        "  color: #00cc00;"
+        "  color: %1;"
         "  padding: 6px 20px;"
-        "  border: 1px solid #006400;"
+        "  border: 1px solid %2;"
         "  border-bottom: none;"
         "}"
         "QTabBar::tab:selected {"
-        "  background: #00cc00;"
+        "  background: %1;"
         "  color: black;"
-        "  border: 1px solid #00ff00;"
+        "  border: 1px solid %3;"
         "  border-bottom: none;"
         "}"
         "QTabBar::tab:!selected:hover {"
-        "  background: #003300;"
-        "}");
+        "  background: %4;"
+        "}").arg(m_pal.text, m_pal.border, m_pal.accent, m_pal.hover));
 
     /* Dependency tree always visible, expands below Accept button */
     m_depTree = new QTreeWidget;
     m_depTree->setHeaderLabel("Dependencies");
     m_depTree->setMinimumHeight(fm.height() * 8 + 4);
-    m_depTree->setStyleSheet(
+    m_depTree->setStyleSheet(QString(
         "QTreeWidget {"
         "  background-color: black;"
-        "  color: green;"
+        "  color: %1;"
         "}"
         "QHeaderView::section {"
-        "  background-color: #1a1a1a;"
-        "  color: #00aa00;"
+        "  background-color: %2;"
+        "  color: %1;"
         "  padding: 2px;"
         "}"
         "QScrollBar:vertical {"
-        "  background-color: #1a1a1a;"
+        "  background-color: %2;"
         "  width: 12px;"
         "}"
         "QScrollBar::handle:vertical {"
-        "  background-color: #006400;"
+        "  background-color: %3;"
         "  min-height: 20px;"
         "}"
         "QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {"
         "  background: none;"
-        "}");
+        "}").arg(m_pal.text, m_pal.bgMid, m_pal.border));
+
+    /* DepTreeStyle draws coloured triangle glyphs for branch indicators.
+     * Orange = collapsed (needs expanding), theme green = expanded.
+     * Ownership transfers to m_depTree. */
+    m_depTree->setStyle(
+        new DepTreeStyle(QColor("#ff8c00"), QColor(m_pal.text), m_depTree->style()));
 
     /* Vertical splitter lets the user resize the var-list vs. dep-tree panels.
      * Collapsing disabled so neither pane can be dragged out of view. */

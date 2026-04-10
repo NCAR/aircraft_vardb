@@ -34,12 +34,41 @@
 #include "raf/vardb.hh"
 #include "raf/VarDBConverter.hh"
 
+/** Green colour palette used throughout the UI.
+ *
+ * @remarks All stylesheet string literals reference these slots so that
+ * switching between Bright and Dim is a single constructor argument.
+ * Background colours (pure black, #2a2a2a chrome) are not theme-dependent
+ * and stay hardcoded in setupUi.  Only the green family varies.
+ *
+ * - text   primary foreground: labels, list/tree items
+ * - border darker green: borders and scrollbar handles
+ * - accent brightest green: selected-tab border highlight only
+ * - hover  dark panel tint: unselected-tab hover state
+ * - bgMid  dark surface: panel backgrounds, scrollbar tracks
+ */
+struct VaredPalette {
+    const char* text;
+    const char* border;
+    const char* accent;
+    const char* hover;
+    const char* bgMid;
+};
+
+namespace VaredTheme {
+    /** Default: crisp phosphor-green terminal look. */
+    inline constexpr VaredPalette Bright = { "#00cc00", "#006400", "#00ff00", "#003300", "#1a1a1a" };
+    /** Alternate: softer green, easier on the eyes in bright rooms. */
+    inline constexpr VaredPalette Dim    = { "#008800", "#004400", "#00cc00", "#001800", "#1a1a1a" };
+}
+
 class VaredMainWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    explicit VaredMainWindow(QWidget* parent = nullptr);
+    explicit VaredMainWindow(const VaredPalette& pal = VaredTheme::Bright,
+                             QWidget* parent = nullptr);
 
     /** Load a vardb file (XML or binary with auto-conversion). */
     void loadFile(const QString& path);
@@ -128,6 +157,7 @@ private:
     };
     std::optional<VarSnapshot> m_undoSnapshot;
 
+    VaredPalette      m_pal;
     VDBFile           m_vdbFile;
     VarDBConverter    m_vdbConverter;
     std::vector<VDBVar*>               m_sortedVars;
