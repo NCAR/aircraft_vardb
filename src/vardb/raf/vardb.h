@@ -104,7 +104,9 @@ const char
 char	**VarDB_GetVariablesInCategory(const int catNum);
 
 int	InitializeVarDB(const char fileName[]),
+	InitializeEmptyVarDB(),
 	VarDB_lookup(const char name[]),
+	VarDB_AddVar(const char name[]),
 	SaveVarDB(const char fileName[]),
 	ReadCategories(), ReadStandardNames(),
 	VarDB_GetCategory(const char vn[]),
@@ -113,6 +115,9 @@ int	InitializeVarDB(const char fileName[]),
 	VarDB_GetStandardName(const char vn[]),
 	VarDB_GetStandardNameNumber(const char categoryName[]),
 	VarDB_GetStandardNameList(char *list[]);
+
+const char
+	*VarDB_GetNameAt(int index);
 
 void	SortVarDB(), ReleaseVarDB(), SetCategoryFileName(const char fn[]),
 	SetStandardNameFileName(const char fn[]);
@@ -128,6 +133,8 @@ float	VarDB_GetFixedRangeLower(const char vn[]),
 	VarDB_GetSpikeSlope(const char vn[]);
 
 bool	VarDB_isAnalog(const char vn[]);
+
+int	VarDB_GetReference(const char vn[]);
 //	VarDB_isRangeFixed(const char vn[]),
 //	VarDB_isRangeFloating(const char vn[]);
 
@@ -147,7 +154,8 @@ int	VarDB_SetUnits(const char vn[], const char units[]),
 	VarDB_SetReference(const char vn[], uint32_t value),
 	VarDB_SetSpikeSlope(const char vn[], float value),
         VarDB_GetVoltageRangeLower(const char vn[]),
-        VarDB_GetVoltageRangeUpper(const char vn[]);
+        VarDB_GetVoltageRangeUpper(const char vn[]),
+        VarDB_GetDefaultSampleRate(const char vn[]);
 }
 
 #endif

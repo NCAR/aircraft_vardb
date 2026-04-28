@@ -319,4 +319,82 @@ int VarDB_lookup(const char vn[])
 
 }	/* END VARDB_LOOKUP */
 
+/* -------------------------------------------------------------------- */
+/**
+ * Reset global VarDB state to an empty, writable database ready for
+ * VarDB_AddVar() population.  Call this before building a binary file
+ * from scratch (e.g., when round-tripping from XML).  Frees any
+ * previously loaded data via ReleaseVarDB().
+ */
+int InitializeEmptyVarDB()
+{
+  ReleaseVarDB();
+
+  VarDB_RecLength = sizeof(struct var_v2);
+  VarDB_nRecords  = 0;
+  VarDB_NcML      = -1;
+
+  varDB_Hdr.MagicCookie = htonl(VarDB_MagicCookie);
+  varDB_Hdr.Version     = htonl(VarDB_CurrentVersion);
+  varDB_Hdr.nRecords    = 0;
+  varDB_Hdr.RecordLen   = htonl((int32_t)VarDB_RecLength);
+  memset(varDB_Hdr.unused, 0, sizeof(varDB_Hdr.unused));
+
+  return(OK);
+
+}	/* END INITIALIZEEMPTYVARDB */
+
+/* -------------------------------------------------------------------- */
+/**
+ * Append a zero-initialised record for @p name and return its index.
+ * Returns the existing index if @p name is already present.
+ * Caller must call SortVarDB() after all additions are complete.
+ *
+ * @param name  Variable name (truncated to VARDB_NL-1 characters).
+ * @returns index >= 0 on success, ERR on allocation failure.
+ */
+int VarDB_AddVar(const char name[])
+{
+  void *tmp;
+  int   pos;
+
+  /* Return existing index without modifying the record. */
+  pos = VarDB_lookup(name);
+  if (pos != ERR)
+    return(pos);
+
+  tmp = realloc(VarDB, (unsigned)(VarDB_nRecords + 1) * (unsigned)VarDB_RecLength);
+  if (!tmp)
+    {
+    fprintf(stderr, "VarDB: out of memory adding var %s\n", name);
+    return(ERR);
+    }
+
+  VarDB = tmp;
+  pos   = VarDB_nRecords;
+
+  memset(&((struct var_v2 *)VarDB)[pos], 0, sizeof(struct var_v2));
+  strncpy(((struct var_v2 *)VarDB)[pos].Name, name, VARDB_NL - 1);
+
+  ++VarDB_nRecords;
+  return(pos);
+
+}	/* END VARDB_ADDVAR */
+
+/* -------------------------------------------------------------------- */
+/**
+ * Return the variable name stored at position @p index, or NULL if the
+ * index is out of range.  Used to iterate over all records without
+ * touching var_v2 struct members directly; insulates callers from
+ * struct layout changes.
+ */
+const char *VarDB_GetNameAt(int index)
+{
+  if (!VarDB || index < 0 || index >= VarDB_nRecords)
+    return(NULL);
+
+  return(((struct var_v2 *)VarDB)[index].Name);
+
+}	/* END VARDB_GETNAMEAT */
+
 /* END INIT.C */

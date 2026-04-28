@@ -19,6 +19,19 @@ public:
   VDBFile*
   open(VDBFile* vdb, const std::string& path);
 
+  /**
+   * Write @p vdb back to the legacy binary VarDB format at @p path.
+   *
+   * XML-only attributes (DERIVE, DEPENDENCIES, MODULUS_RANGE) have no
+   * corresponding binary field and are silently dropped.  The projDir
+   * must be set (via a prior open() call) so that category and standard
+   * name strings can be resolved to their integer indices.
+   *
+   * @returns OK on success, ERR on failure.
+   */
+  int
+  saveAsBinary(VDBFile* vdb, const std::string& path);
+
   std::string
   defaultOutputPath();
 

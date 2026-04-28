@@ -189,4 +189,17 @@ int VarDB_SetStandardName(const char vn[], uint32_t value)
 
 }	/* END VARDB_SETSTANDARDNAME */
 
+/* -------------------------------------------------------------------- */
+int VarDB_SetReference(const char vn[], uint32_t value)
+{
+  int indx;
+
+  if ((indx = VarDB_lookup(vn)) == ERR)
+    return(ERR);
+
+  ((struct var_v2 *)VarDB)[indx].reference = htonl(value);
+  return(OK);
+
+}	/* END VARDB_SETREFERENCE */
+
 /* END SET.C */

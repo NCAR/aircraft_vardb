@@ -50,6 +50,7 @@ static std::vector<VDBVar*> sortedVars;
 static std::vector<std::string> categoryNames;
 static std::vector<std::string> stdNames;
 static std::string xmlSavePath;
+static std::string binarySavePath;  // non-empty when opened from a binary file
 
 extern Widget	catXx, stdNameXx, catMenu, stdNameMenu, list, referenceButton,
 		EFtext[], analogButton;
@@ -205,12 +206,21 @@ void OpenNewFile_OK(Widget w, XtPointer client, XmFileSelectionBoxCallbackStruct
     exit(1);
     }
 
-  /* Determine save path: use .xml extension. */
+  /* Determine save paths.  XML is always written to a .xml path.  When
+   * opened from a binary file, the original binary path is also tracked
+   * so SaveFile() can keep both in sync.
+   */
   std::string path(FileName);
   if (path.length() >= 4 && path.substr(path.length() - 4) == ".xml")
-    xmlSavePath = path;
+  {
+    xmlSavePath   = path;
+    binarySavePath.clear();
+  }
   else
-    xmlSavePath = vdbConverter.defaultOutputPath();
+  {
+    xmlSavePath    = vdbConverter.defaultOutputPath();
+    binarySavePath = path;
+  }
 
   /* Build sorted variable list and populate Motif list widget. */
   rebuildSortedVars();
@@ -332,12 +342,24 @@ void SaveFile(Widget w, XtPointer client, XtPointer call)
   try
     {
     vdbFile.save(xmlSavePath);
-    ChangesMade = FALSE;
     }
   catch (...)
     {
-    ShowError((char *)"Error trying to save, aborted.");
+    ShowError((char *)"Error saving XML, aborted.");
+    return;
     }
+
+  /* When the session originated from a binary file, keep it in sync. */
+  if (!binarySavePath.empty())
+    {
+    if (vdbConverter.saveAsBinary(&vdbFile, binarySavePath) == ERR)
+      {
+      ShowError((char *)"Error saving binary VarDB, aborted.");
+      return;
+      }
+    }
+
+  ChangesMade = FALSE;
 
 }	/* END SAVEFILE */
 

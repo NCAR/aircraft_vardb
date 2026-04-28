@@ -267,4 +267,33 @@ int VarDB_GetStandardName(const char vn[])
 
 }	/* END VARDB_GETCATEGORY */
 
+/* -------------------------------------------------------------------- */
+/**
+ * Return the default sample rate for @p vn as a signed integer.
+ * The binary field is int32_t stored in network byte order; the legacy
+ * VarDB_DefaultSampleRate() function incorrectly decoded it as float.
+ */
+int32_t VarDB_GetDefaultSampleRate(const char vn[])
+{
+  int indx;
+
+  if ((indx = VarDB_lookup(vn)) == ERR || VarDB_NcML > 0)
+    return(defaults.defaultSampleRate);
+
+  return(ntohl(((struct var_v2 *)VarDB)[indx].defaultSampleRate));
+
+}	/* END VARDB_GETDEFAULTSAMPLERATE */
+
+/* -------------------------------------------------------------------- */
+int VarDB_GetReference(const char vn[])
+{
+  int indx;
+
+  if ((indx = VarDB_lookup(vn)) == ERR || VarDB_NcML > 0)
+    return(defaults.reference);
+
+  return(ntohl(((struct var_v2 *)VarDB)[indx].reference));
+
+}	/* END VARDB_GETREFERENCE */
+
 /* END GET.C */
