@@ -160,7 +160,7 @@ void OpenNewFile_OK(Widget w, XtPointer client, XmFileSelectionBoxCallbackStruct
     n = 0;
     XtSetArg(args[n], XmNlabelString, name); ++n;
     b[i] = XmCreatePushButton(catMenu, (char *)"opMenB", args, n);
-    XtAddCallback(b[i], XmNactivateCallback, SetCategory, (XtPointer)i);
+    XtAddCallback(b[i], XmNactivateCallback, SetCategory, (XtPointer)(uintptr_t)i);
 
     XmStringFree(name);
     }
@@ -177,7 +177,7 @@ void OpenNewFile_OK(Widget w, XtPointer client, XmFileSelectionBoxCallbackStruct
     n = 0;
     XtSetArg(args[n], XmNlabelString, name); ++n;
     b[i] = XmCreatePushButton(stdNameMenu, (char *)"opMenB", args, n);
-    XtAddCallback(b[i], XmNactivateCallback, SetStandardName, (XtPointer)i);
+    XtAddCallback(b[i], XmNactivateCallback, SetStandardName, (XtPointer)(uintptr_t)i);
 
     XmStringFree(name);
     }
@@ -291,8 +291,8 @@ void EditVariable(Widget w, XtPointer client, XmListCallbackStruct *call)
     XmToggleButtonSetState(analogButton, false, false);
     }
 
-  SetCategory(NULL, (XtPointer)ntohl(((struct var_v2 *)VarDB)[pos].Category), NULL);
-  SetStandardName(NULL, (XtPointer)ntohl(((struct var_v2 *)VarDB)[pos].standard_name), NULL);
+  SetCategory(NULL, (XtPointer)(uintptr_t)ntohl(((struct var_v2 *)VarDB)[pos].Category), NULL);
+  SetStandardName(NULL, (XtPointer)(uintptr_t)ntohl(((struct var_v2 *)VarDB)[pos].standard_name), NULL);
 
   XmToggleButtonSetState(referenceButton,
 		ntohl(((struct var_v2 *)VarDB)[pos].reference), False);
