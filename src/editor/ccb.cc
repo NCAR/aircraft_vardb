@@ -352,7 +352,7 @@ void SaveFile(Widget w, XtPointer client, XtPointer call)
   /* When the session originated from a binary file, keep it in sync. */
   if (!binarySavePath.empty())
     {
-    if (vdbConverter.saveAsBinary(&vdbFile, binarySavePath) == ERR)
+    if (!vdbConverter.saveAsBinary(&vdbFile, binarySavePath))
       {
       ShowError((char *)"Error saving binary VarDB, aborted.");
       return;

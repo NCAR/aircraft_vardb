@@ -27,9 +27,9 @@ public:
    * must be set (via a prior open() call) so that category and standard
    * name strings can be resolved to their integer indices.
    *
-   * @returns OK on success, ERR on failure.
+   * @returns true on success, false on failure.
    */
-  int
+  bool
   saveAsBinary(VDBFile* vdb, const std::string& path);
 
   std::string

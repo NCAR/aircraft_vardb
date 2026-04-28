@@ -331,7 +331,7 @@ open(VDBFile* vdb_in, const std::string& path)
 }
 
 
-int
+bool
 VarDBConverter::
 saveAsBinary(VDBFile* vdb_in, const std::string& path)
 {
@@ -354,7 +354,7 @@ saveAsBinary(VDBFile* vdb_in, const std::string& path)
   if (!vdb_in || !vdb_in->is_valid())
   {
     cerr << "saveAsBinary: invalid VDBFile\n";
-    return(ERR);
+    return false;
   }
 
   // Point the C category/standard-name readers at the right directory.
@@ -363,10 +363,10 @@ saveAsBinary(VDBFile* vdb_in, const std::string& path)
   string stdPath = projDirPath("StandardNames");
   SetStandardNameFileName(stdPath.c_str());
 
-  if (InitializeEmptyVarDB() == ERR)
+  if (InitializeEmptyVarDB() != 0)
   {
     cerr << "saveAsBinary: InitializeEmptyVarDB failed\n";
-    return(ERR);
+    return false;
   }
 
   VDBFile& vdb = *vdb_in;
@@ -381,12 +381,11 @@ saveAsBinary(VDBFile* vdb_in, const std::string& path)
     const string vname = var->name();
     const char  *vn    = vname.c_str();
 
-    int idx = VarDB_AddVar(vn);
-    if (idx == ERR)
+    if (VarDB_AddVar(vn) < 0)
     {
       cerr << "saveAsBinary: failed to add var " << vname << "\n";
       ReleaseVarDB();
-      return(ERR);
+      return false;
     }
 
     VarDB_SetTitle(vn,         var->get_attribute(VDBVar::LONG_NAME).c_str());
@@ -432,9 +431,9 @@ saveAsBinary(VDBFile* vdb_in, const std::string& path)
 
   SortVarDB();
 
-  int rc = SaveVarDB(path.c_str());
+  bool ok = (SaveVarDB(path.c_str()) == 0);
   ReleaseVarDB();
-  return(rc);
+  return ok;
 
 }	/* END SAVEASBINARY */
 
