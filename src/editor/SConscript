@@ -15,7 +15,7 @@ env.Default(vared)
 if env.get('INSTALL_VARDB') and env['INSTALL_VARDB'] == True:
   env.Install(env['INSTALL_PREFIX']+'/bin', vared)
 
-# ---- apply_deptable: DependTable → vardb XML importer ----
+# ---- apply_deptable: DependTable vardb XML importer ----
 dt_env = Environment(tools=['default', 'prefixoptions', 'vardb'])
 dt_env.Append(CXXFLAGS=Split("-std=c++17 -Wall -g -O2"))
 apply_deptable = dt_env.Program("apply_deptable", ["apply_deptable.cc"])
@@ -29,19 +29,19 @@ if dt_env.get('INSTALL_VARDB') and dt_env['INSTALL_VARDB'] == True:
 # layout path so pkg-config finds Qt5 even when it is not in the user's
 # environment (common on RHEL/Fedora where qt5-qtbase-devel installs .pc
 # files under /usr/lib64/pkgconfig rather than the default search path).
-import os
-_rpm_qt5_pc = '/usr/lib64/pkgconfig'
-_pkg_config_path = os.environ.get('PKG_CONFIG_PATH', '')
-if _rpm_qt5_pc not in _pkg_config_path.split(':'):
-    os.environ['PKG_CONFIG_PATH'] = ':'.join(filter(None, [_pkg_config_path, _rpm_qt5_pc]))
+#import os
+#_rpm_qt5_pc = '/usr/lib64/pkgconfig'
+#_pkg_config_path = os.environ.get('PKG_CONFIG_PATH', '')
+#if _rpm_qt5_pc not in _pkg_config_path.split(':'):
+#    os.environ['PKG_CONFIG_PATH'] = ':'.join(filter(None, [_pkg_config_path, _rpm_qt5_pc]))
 
 qt_env = Environment(tools=['default', 'prefixoptions', 'vardb', 'netcdf', 'raf', 'qt5'])
 
-qt_env.Append(CXXFLAGS=Split("-std=c++17 -Wall -g -O2"))
+qt_env.Append(CXXFLAGS=Split("-std=c++17 -Wall -Werror -g -O2"))
 
 # EnableQtModules sets up CPPPATH/LIBS regardless of its return value.
 # The return value is inverted in the eol_scons tool (returns False on
-# success on Linux), so use QT5_MOC — set by generate() only when Qt
+# success on Linux), so use QT5_MOC set by generate() only when Qt
 # is actually found — as the reliable availability check instead.
 qt_env.EnableQtModules(['QtCore', 'QtWidgets'])
 if qt_env.get('QT5_MOC'):
@@ -60,7 +60,7 @@ if qt_env.get('QT5_MOC'):
     qt_env.Default(vared_qt)
 
     if qt_env.get('INSTALL_VARDB') and qt_env['INSTALL_VARDB'] == True:
-        qt_env.Install(qt_env['INSTALL_PREFIX']+'/bin', vared_qt)
+        qt_env.InstallProgram(vared_qt)
 else:
     Export({'vmw_lib': []})
     print("Qt5 not found skipping vared_qt build")
