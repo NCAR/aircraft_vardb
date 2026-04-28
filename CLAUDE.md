@@ -1,12 +1,14 @@
 # CLAUDE.md — EOL project instructions for Claude Code
+## Safety Rules
+-  Never run destructive commands (rm, git clean, etc.) without explicitly asking permission first.
 
 ## Style
-- No emojis in code, comments, or documentation.
 - Match the style of existing code. Do not reformat code you did not change.
 - Do not add docstrings, comments, or type annotations to unchanged code.
 
 ## Build system
 - Prefer SCons (via eol_scons) over CMake for C++ projects.
+- Pin at c++ 17: this is another repo's dependancy, I've forgetten which one
 
 ## Testing
 - Always run the test suite before considering a change complete.
@@ -15,6 +17,8 @@
 ## Access
 - Do not access the EOL wiki, private repositories, issues, chat, or email.
 - Do not store or transmit credentials or secrets.
+- Do not commit without asking - verify branch first
+- When searching the codebase, always confirm the correct path with the user before deep-diving. Exclude hidden directories (e.g., .git, .build) from find commands by default.
 
 ## Code quality
 - Favor simple, readable solutions over clever ones.
@@ -37,10 +41,13 @@ When you find a deprecated practice:
 1. Propose a fix in the current repo (follow bad-code handling rule).
 2. Document the deprecation and reason in the README or relevant project docs.
    Include references to external docs, specs, or resources consulted during
-   the session — future maintainers benefit from the trail.
+   the session future maintainers benefit from the trail.
 3. If the deprecation is relevant to EOL software development broadly (not just
    this project), suggest a PR to github.com/NCAR/eol-se-guidelines. Skip if
    it's project-specific.
+
+## Project Context 
+- This project ecosystem primarily uses: Python, C++ 17 with SCons/CMake, Qt5, and runs on RHEL Linux. Default to these technologies unless told otherwise.
 
 ## Accessibility
 - Do not rely on color alone to convey state. Always pair a color change with a
@@ -64,10 +71,7 @@ QAccessibleInterface subclass. Specifically:
 - Override `text(QAccessible::Text)` to return a human-readable description of
   the full dependency path from the selected node to its leaves.
 - Register the interface with `QAccessible::installFactory`.
-- Reference: Qt docs — "Implementing Accessibility" and QAccessibleInterface.
-- This work should be driven by a tester with a real screen reader (VoiceOver
-  on macOS or NVDA on Windows) to verify the narration is actually useful,
-  not just technically present. Do not implement blind (pun intended).
+- Reference: Qt docs "Implementing Accessibility" and QAccessibleInterface.
 
 ## Licensing and cost
 - Never introduce a dependency whose license is incompatible with the project,
