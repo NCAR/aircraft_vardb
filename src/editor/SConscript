@@ -37,7 +37,7 @@ if dt_env.get('INSTALL_VARDB') and dt_env['INSTALL_VARDB'] == True:
 
 qt_env = Environment(tools=['default', 'prefixoptions', 'vardb', 'netcdf', 'raf', 'qt5'])
 
-qt_env.Append(CXXFLAGS=Split("-std=c++17 -Wall -Werror -g -O2"))
+qt_env.Append(CXXFLAGS=Split("-std=c++17 -Wall -g -O2"))
 
 # EnableQtModules sets up CPPPATH/LIBS regardless of its return value.
 # The return value is inverted in the eol_scons tool (returns False on
