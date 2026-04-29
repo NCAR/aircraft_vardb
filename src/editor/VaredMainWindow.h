@@ -86,6 +86,7 @@ private slots:
     void onFileOpen();
     void onFileSave();
     void onFileSaveAs();
+    void onFileExportBinary();
     void onImportDependTable();  // File menu "Merge DependTable..."
     void onVariableSelected(QListWidgetItem* item);
     void onAccept();

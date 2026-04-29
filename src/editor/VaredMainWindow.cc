@@ -1,11 +1,11 @@
 /*
- * VaredMainWindow.cc — Qt replacement for the Motif vared GUI.
+ * VaredMainWindow.cc --  Qt replacement for the Motif vared GUI.
  *
  * Logic faithfully ported from:
- *   ccb.cc  — callbacks (Accept, Clear, Delete, EditVariable, OpenNewFile_OK, …)
- *   initv.cc — Initialize()
- *   Xwin.cc  — CreateMainWindow() layout
- *   fbr.h    — resource strings (labels, sizes, colours)
+ *   ccb.cc  --  callbacks (Accept, Clear, Delete, EditVariable, OpenNewFile_OK, …)
+ *   initv.cc --  Initialize()
+ *   Xwin.cc  --  CreateMainWindow() layout
+ *   fbr.h    --  resource strings (labels, sizes, colours)
  *
  * Changes from original Qt port:
  *   - Variable list replaced with a QTabWidget holding separate "Raw (N)" and
@@ -56,8 +56,8 @@ char* strupr(char*);
  * overrides drawPrimitive(PE_IndicatorBranch) to draw a filled triangle
  * directly, giving full colour control without requiring image resources.
  *
- * collapsed — colour of the right-pointing arrow (node has hidden children)
- * expanded  — colour of the down-pointing arrow (node is open)
+ * collapsed --  colour of the right-pointing arrow (node has hidden children)
+ * expanded  --  colour of the down-pointing arrow (node is open)
  */
 class DepTreeStyle : public QProxyStyle
 {
@@ -131,7 +131,7 @@ static bool isValidFloat(const QString& text)
     return ok;
 }
 
-/* Helper: true when var has non-empty DEPENDENCIES — i.e. it is computed
+/* Helper: true when var has non-empty DEPENDENCIES --  i.e. it is computed
  * from other variables.  A RAW variable has no dependencies (it comes from
  * a sensor) but may still carry a DERIVE list naming variables that use it
  * as an input; that forward-reference does not make it derived. */
@@ -156,7 +156,8 @@ void VaredMainWindow::setupUi()
     QMenu* fileMenu = menuBar()->addMenu("&File");
     fileMenu->addAction("Open New File",  this, &VaredMainWindow::onFileOpen,  QKeySequence("Ctrl+O"));
     fileMenu->addAction("Save",           this, &VaredMainWindow::onFileSave,  QKeySequence("Ctrl+S"));
-    fileMenu->addAction("Save As",        this, &VaredMainWindow::onFileSaveAs,QKeySequence("Ctrl+A"));
+    fileMenu->addAction("Save As",        this, &VaredMainWindow::onFileSaveAs,      QKeySequence("Ctrl+A"));
+    fileMenu->addAction("Export Binary...", this, &VaredMainWindow::onFileExportBinary);
     fileMenu->addAction("Merge DependTable...", this, &VaredMainWindow::onImportDependTable);
     fileMenu->addSeparator();
     fileMenu->addAction("Quit",           qApp, &QApplication::quit,           QKeySequence("Ctrl+Q"));
@@ -550,7 +551,7 @@ void VaredMainWindow::loadFile(const QString& path)
     m_addedVars.clear();
     m_modifiedVars.clear();
     m_deletedVars.clear();
-    setWindowTitle(QString("Variable DataBase Editor — %1")
+    setWindowTitle(QString("Variable DataBase Editor --  %1")
                    .arg(QString::fromStdString(spath)));
 }
 
@@ -1362,7 +1363,7 @@ void VaredMainWindow::onListContextMenu(const QPoint& pos)
     m_nameEdit->clear();
     m_nameEdit->setFocus();
     statusBar()->showMessage(
-        QString("Duplicating %1 — enter new name and Accept").arg(item->text()));
+        QString("Duplicating %1 --  enter new name and Accept").arg(item->text()));
 }
 
 /* -------------------------------------------------------------------- */
@@ -1403,6 +1404,23 @@ void VaredMainWindow::onFileSaveAs()
     } catch (...) {
         QMessageBox::critical(this, "Error", "Error trying to save, aborted.");
     }
+}
+
+/* -------------------------------------------------------------------- */
+void VaredMainWindow::onFileExportBinary()
+{
+    // XML-only attributes (DERIVE, DEPENDENCIES, MODULUS_RANGE) have no
+    // binary field and will be silently dropped on write.
+    QMessageBox::information(this, "Export As Binary",
+        "Note: XML-only attributes (DERIVE, DEPENDENCIES, MODULUS_RANGE) "
+        "are not stored in the binary format and will be omitted.");
+
+    QString path = QFileDialog::getSaveFileName(
+        this, "Save As Binary", QString::fromStdString(m_xmlSavePath),
+        "VarDB binary (VarDB);;All files (*)");
+    if (path.isEmpty()) return;
+    if (!m_vdbConverter.saveAsBinary(&m_vdbFile, path.toStdString()))
+        QMessageBox::critical(this, "Error", "Error saving binary VarDB, aborted.");
 }
 
 /* -------------------------------------------------------------------- */
