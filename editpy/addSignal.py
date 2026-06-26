@@ -3,7 +3,7 @@
 #Input:
 #   signals-New information to transcribe. Is of different forms depending on desired action
 #   self-holds all Gui information
-#   num- used to call generate buttons after edditing is finished. -1 is a flag
+#   num- used to call generate buttons after editing is finished. -1 is a flag
 #        for no need to generate the buttons again
 #   instructions- dictionary with instructions of what action to take. Determines
 #                 how VDB will be editted, and what signals is expected to look like.      

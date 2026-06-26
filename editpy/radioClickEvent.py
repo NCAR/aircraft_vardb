@@ -11,7 +11,7 @@ from setup import fileName
 headers=[]
 rightInfoHub={'headers':{},'textBoxes':{}}
 #------------------------------------------------------------------------------
-#removes leading descriptior from static lable, appends to signal list
+#removes leading descriptior from static label, appends to signal list
 def signalSet(self,name):
    global rightInfoHub
    try:
@@ -34,7 +34,7 @@ def textChange(self):
       rightInfoHub['textBoxes']['voltage_range'].setDisabled(False)
       rightInfoHub['textBoxes']['default_sample_rate'].setDisabled(False)
 #-----------------------------------------------------------------------------
-#Creates upright hand side lables and text boxes
+#Creates upright hand side labels and text boxes
 def labler(lablename,signalname,self,num):
    #incoming signal names are local, must be global for use in exec
    global selfglobal
@@ -148,7 +148,7 @@ def makeRightInfoHub(self,headers):
 #-------------------------------------------
 #This function saves edits which have been made
 #input:
-#    headers is a list of attributes editted
+#    headers is a list of attributes edited
 #    num is the variable's alphanumeric position in vardb
 def saveChanges(self,headers,num):
    global bools
@@ -236,7 +236,7 @@ def lookingAt(self):
         labler(dictionary[0],'',self,i)
       i+=1
 
-   #textChange to desigable is_analog if neccessary
+   #textChange to desigable is_analog if necessary
    textChange(self)
 
    #Disconnect buttons

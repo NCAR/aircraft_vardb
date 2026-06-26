@@ -10,7 +10,7 @@ STATIC FNS:	none
 
 DESCRIPTION:	Take Standard Name information from master file and map
 		into an existing file.
-		VarDB.  This allows indivdual copies to be brought upto
+		VarDB.  This allows individual copies to be brought upto
 		date quickly and easily.
 
 INPUT:		FileName

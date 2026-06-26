@@ -5,7 +5,7 @@ OBJECT NAME:	vdbmerge.c
 FULL NAME:	VarDB merge
 
 DESCRIPTION:	This merges /home/local/proj/defaults/VarDB into another
-		VarDB.  This allows indivdual copies to be brought upto
+		VarDB.  This allows individual copies to be brought upto
 		date quickly and easily.
 
 COPYRIGHT:	University Corporation for Atmospheric Research, 1993

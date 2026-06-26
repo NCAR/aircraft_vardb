@@ -1,5 +1,5 @@
 #Julian Quick
-#This function comfirms the user desires to remove a variable, and calls the remove function
+#This function confirms the user desires to remove a variable, and calls the remove function
 import getInfo
 import remove
 from setup import fileName

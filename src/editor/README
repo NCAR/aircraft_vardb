@@ -1,4 +1,4 @@
-Directions for editing the Master Varriable DataBase
+Directions for editing the Master Variable DataBase
 
 cd /home/local/dev/proj/defaults
 sccs edit VarDB

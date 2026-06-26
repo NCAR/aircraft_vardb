@@ -68,7 +68,7 @@ schema to load the XML a second time and validate it.
 The use of 'any' in XML Schema may also provide a cool solution for this.
 As new elements are added, they could be defined in their own schemas, and
 a vdb xml file can extend the basic schema with those new schemas.  New
-elements still cannot be added arbitarily though (ie, at runtime).
+elements still cannot be added arbitrarily though (ie, at runtime).
 
 Another option is to drop schema validation completely.  Instead, load the
 XML without validation (meaning it is well-formed), then explicitly check
