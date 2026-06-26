@@ -2,7 +2,7 @@
 
 from SCons.Script import Environment, Split, Export
 
-env = Environment(tools=['default', 'prefixoptions', 'text2cc',
+env = Environment(tools=['default', 'prefixoptions', 'raf', 'text2cc',
                          'domx', 'boost_regex'])
 
 env.Append(CXXFLAGS=Split("-std=c++17 -Werror -Wall -g -O2"))
