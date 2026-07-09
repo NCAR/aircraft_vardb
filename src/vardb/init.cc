@@ -225,14 +225,44 @@ static bool performCorrections(void *varDB)
     {
       modified = true;
       strcpy(p->Units, "degC");
-      printf("%s - deg_C changed to degC, per SI units\n", p->Name);
+      printf("%s - deg_C changed to %s, per SI units\n", p->Name, p->Units);
     }
 
-    if (strcmp(p->Units, "mbar") == 0)
+    if (strcmp(p->Units, "deg_K") == 0 || strcmp(p->Units, "degK") == 0)
+    {
+      modified = true;
+      strcpy(p->Units, "K");
+      printf("%s - deg_K changed to %s, per SI units\n", p->Name, p->Units);
+    }
+
+    if (strcmp(p->Units, "deg_F") == 0)
+    {
+      modified = true;
+      strcpy(p->Units, "degF");
+      printf("%s - deg_F changed to %s\n", p->Name, p->Units);
+    }
+
+    if (strncmp(p->Units, "#/", 2) == 0)
+    {
+      modified = true;
+      printf("%s - %s changed to", p->Name, p->Units);
+      p->Units[0] = '1';
+      printf(" %s, per CF/UDUNITS\n", p->Units);
+    }
+
+    if (strcmp(p->Units, "none") == 0 || strcmp(p->Units, "bool") == 0)
+    {
+      modified = true;
+      printf("%s - %s changed to", p->Name, p->Units);
+      strcpy(p->Units, "1");
+      printf(" %s, per CF/UDUNITS\n", p->Units);
+    }
+
+    if (strcmp(p->Units, "mbar") == 0 || strcmp(p->Units, "hpa") == 0)
     {
       modified = true;
       strcpy(p->Units, "hPa");
-      printf("%s - mbar changed to hPa\n", p->Name);
+      printf("%s - mbar changed to %s, per SI units\n", p->Name, p->Units);
     }
 
     if (p->is_analog == false && p->defaultSampleRate != 0)
